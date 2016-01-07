@@ -1,5 +1,5 @@
 {
-  "name": "editorText",
+  "name": "Text Editor",
   "id": "editorText",
   "description": "A TagSpaces extension allowing editing of text based documents.",
   "type": "editor",
