@@ -35,13 +35,14 @@ define(function(require, exports, module) {
 
     $("#" + containerElementID).append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
     var mode = filetype[fileExt];
-    if (!mode) {
-      mode = "properties";
+    var modePath;
+    if (mode) {
+      modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
     }
 
     require([
       extensionDirectory + '/libs/codemirror/lib/codemirror',
-      extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode,
+      modePath,
       'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
       'css!' + extensionDirectory + '/extension.css'
     ], function(CodeMirror) {
@@ -64,6 +65,7 @@ define(function(require, exports, module) {
         lineNumbers: lineNumbers,
         lineWrapping: true,
         tabSize: 2,
+        //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
         collapseRange: true,
         matchBrackets: true,
         cursorBlinkRate: cursorBlinkRate,
