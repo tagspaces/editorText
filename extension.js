@@ -1,16 +1,13 @@
-/* Copyright (c) 2013 The Tagspaces Authors. All rights reserved.
- * Use of this source code is governed by a AGPL3 license that
- * can be found in the LICENSE file. */
+/* Copyright (c) 2013-2016 The TagSpaces Authors.
+ * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
 
 define(function(require, exports, module) {
   "use strict";
 
   console.log("Loading editorText extension");
 
-  exports.id = "editorText"; // ID should be equal to the directory name where the ext. is located   
-  exports.title = "Text Editor based on codemirror";
-  exports.type = "editor";
-  exports.supportedFileTypes = [
+  var extensionID = "editorText"; // ID should be equal to the directory name where the ext. is located
+  var extensionSupportedFileTypes = [
     "h", "c", "clj", "coffee", "coldfusion", "cpp",
     "cs", "css", "groovy", "haxe", "htm", "html",
     "java", "js", "jsm", "json", "latex", "less",
@@ -23,11 +20,11 @@ define(function(require, exports, module) {
   var TSCORE = require("tscore");
 
   var cmEditor;
-  var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + exports.id;
+  var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + extensionID;
 
   var contentLoaded = false;
 
-  exports.init = function(filePath, containerElementID, isViewerMode) {
+  function init(filePath, containerElementID, isViewerMode) {
     console.log("Initalization Text Editor...");
     contentLoaded = false;
 
@@ -106,11 +103,12 @@ define(function(require, exports, module) {
     return key[0] + "-" + key[1].toUpperCase();
   }
 
-  exports.viewerMode = function(isViewerMode) {
+  function viewerMode(isViewerMode) {
+
     cmEditor.readOnly = isViewerMode;
   };
 
-  exports.setContent = function(content) {
+  function setContent(content) {
     //console.log("Content: "+content);
     var UTF8_BOM = "\ufeff";
     if (content.indexOf(UTF8_BOM) === 0) {
@@ -122,7 +120,8 @@ define(function(require, exports, module) {
     contentLoaded = true;
   };
 
-  exports.getContent = function() {
+  function getContent() {
+
     return cmEditor.getValue();
   };
 
@@ -159,5 +158,10 @@ define(function(require, exports, module) {
   filetype.sql = "sql";
   filetype.svg = "xml";
   filetype.xml = "xml";
+
+  exports.init = init;
+  exports.getContent = getContent;
+  exports.setContent = setContent;
+  exports.viewerMode = viewerMode;
 
 });
