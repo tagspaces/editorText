@@ -4,8 +4,6 @@
 define(function(require, exports, module) {
   "use strict";
 
-  console.log("Loading editorText extension");
-
   var extensionID = "editorText"; // ID should be equal to the directory name where the ext. is located
   var extensionSupportedFileTypes = [
     "h", "c", "clj", "coffee", "coldfusion", "cpp",
@@ -17,12 +15,45 @@ define(function(require, exports, module) {
     "scss", "sh", "sql", "svg", "textile", "txt", "xml"
   ];
 
-  var TSCORE = require("tscore");
+  console.log("Loading " + extensionID);
 
+  var TSCORE = require("tscore");
   var cmEditor;
   var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + extensionID;
-
   var contentLoaded = false;
+  var filetype = [];
+  filetype.h = "clike";
+  filetype.c = "clike";
+  filetype.clj = "clojure";
+  filetype.coffee = "coffeescript";
+  filetype.cpp = "clike";
+  filetype.cs = "clike";
+  filetype.css = "css";
+  filetype.groovy = "groovy";
+  filetype.haxe = "haxe";
+  filetype.htm = "xml";
+  filetype.html = "xml";
+  filetype.java = "clike";
+  filetype.js = "javascript";
+  filetype.jsm = "javascript";
+  filetype.json = "javascript";
+  filetype.less = "less";
+  filetype.lua = "lua";
+  filetype.markdown = "markdown";
+  filetype.md = "markdown";
+  filetype.mdown = "markdown";
+  filetype.mdwn = "markdown";
+  filetype.mkd = "markdown";
+  filetype.ml = "ocaml";
+  filetype.mli = "ocaml";
+  filetype.pl = "perl";
+  filetype.php = "php";
+  filetype.py = "python";
+  filetype.rb = "ruby";
+  filetype.sh = "shell";
+  filetype.sql = "sql";
+  filetype.svg = "xml";
+  filetype.xml = "xml";
 
   function init(filePath, containerElementID, isViewerMode) {
     console.log("Initalization Text Editor...");
@@ -88,7 +119,7 @@ define(function(require, exports, module) {
         console.error("Loading file " + filePath + " failed " + error);
       });
     });
-  };
+  }
 
   // Converts mod+s to Ctrl+S
   function convertMouseTrapToCodeMirrorKeyBindings(keyBinding) {
@@ -106,7 +137,7 @@ define(function(require, exports, module) {
   function viewerMode(isViewerMode) {
 
     cmEditor.readOnly = isViewerMode;
-  };
+  }
 
   function setContent(content) {
     //console.log("Content: "+content);
@@ -118,46 +149,12 @@ define(function(require, exports, module) {
     cmEditor.clearHistory();
     cmEditor.refresh();
     contentLoaded = true;
-  };
+  }
 
   function getContent() {
 
     return cmEditor.getValue();
-  };
-
-  var filetype = [];
-  filetype.h = "clike";
-  filetype.c = "clike";
-  filetype.clj = "clojure";
-  filetype.coffee = "coffeescript";
-  filetype.cpp = "clike";
-  filetype.cs = "clike";
-  filetype.css = "css";
-  filetype.groovy = "groovy";
-  filetype.haxe = "haxe";
-  filetype.htm = "xml";
-  filetype.html = "xml";
-  filetype.java = "clike";
-  filetype.js = "javascript";
-  filetype.jsm = "javascript";
-  filetype.json = "javascript";
-  filetype.less = "less";
-  filetype.lua = "lua";
-  filetype.markdown = "markdown";
-  filetype.md = "markdown";
-  filetype.mdown = "markdown";
-  filetype.mdwn = "markdown";
-  filetype.mkd = "markdown";
-  filetype.ml = "ocaml";
-  filetype.mli = "ocaml";
-  filetype.pl = "perl";
-  filetype.php = "php";
-  filetype.py = "python";
-  filetype.rb = "ruby";
-  filetype.sh = "shell";
-  filetype.sql = "sql";
-  filetype.svg = "xml";
-  filetype.xml = "xml";
+  }
 
   exports.init = init;
   exports.getContent = getContent;
