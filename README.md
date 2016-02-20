@@ -1,28 +1,31 @@
+A TagSpaces extension allowing editing of text based documents.
 
-    {
-      "name": "editorText",
-      "id": "editorText",
-      "description": "A TagSpaces extension allowing editing of text based documents.",
-      "type": "editor",
-      "version": "1.0.0",
-      "dependencies": {
-        "codemirror": "~3.24.0"
-      },
-      "devDependencies": {},
-      "authors": [
-        "TagSpaces Authors - http://tagspaces.org",
-        "Ilian Sapundshiev - http://ilian.me"
-      ],
-      "keywords": [
-        "text",
-        "editor"
-      ],
-      "license": "",
-      "main": [
-        "extension.js"
-      ],
-      "ignore": [
-        "Gruntfile.js"
-      ],
-      "private": true
-    }
+## Features
+
+* Opening and editing of text documents
+* Syntax highlighting for the following file types: h, c, clj, coffee, coldfusion, cpp, cs, css, groovy, haxe, htm, html, java, js, jsm, json, latex, less, ly, ily, lua, markdown, md, mdown","mdwn, mkd, ml, mli, pl, php, powershell, py, rb, scad, scala, scss, sh, sql, svg, textile, txt, xml
+
+## Used libraries
+This extension thankfully relays on the following great libraries:
+
+* [codemirror](http://codemirror.net/)
+
+## Installation
+
+This extensions is packaged with any new version of TagSpaces
+
+## Source code
+
+The source code of this extension is freely available on [github.com/tagspaces/editorText](https://github.com/tagspaces/editorText/)
+
+## Development
+
+If you want to extend this extensions, please follow our general [extension development guide](http://tagspaces.org/documentation/extension-development-guide)
+
+## Screenshots
+
+![Screenshot of the editorText](http://tagspaces.org/extensions/editorHTML/editorText-screenshot.png)
+
+## License
+
+[MIT](https://github.com/tagspaces/editorText/blob/master/LICENSE.txt)
