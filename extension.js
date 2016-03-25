@@ -21,6 +21,7 @@ define(function(require, exports, module) {
   var cmEditor;
   var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + extensionID;
   var contentLoaded = false;
+
   var filetype = [];
   filetype.h = "clike";
   filetype.c = "clike";
@@ -70,6 +71,8 @@ define(function(require, exports, module) {
 
     require([
       extensionDirectory + '/libs/codemirror/lib/codemirror',
+      //extensionDirectory + '/libs/codemirror/addon/search/search',
+      //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
       modePath,
       'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
       'css!' + extensionDirectory + '/extension.css'
