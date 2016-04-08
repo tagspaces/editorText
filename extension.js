@@ -61,8 +61,10 @@ define(function(require, exports, module) {
     contentLoaded = false;
 
     var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
+    
+    var $containerElement = $("#" + containerElementID); 
 
-    $("#" + containerElementID).append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
+    $containerElement.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
     var mode = filetype[fileExt];
     var modePath;
     if (mode) {
@@ -73,10 +75,59 @@ define(function(require, exports, module) {
       extensionDirectory + '/libs/codemirror/lib/codemirror',
       //extensionDirectory + '/libs/codemirror/addon/search/search',
       //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
-      modePath,
-      'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
+      "marked",
+      "text!" + extensionDirectory + '/toolbar.html',
+      modePath,                   
+      'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',      
       'css!' + extensionDirectory + '/extension.css'
-    ], function(CodeMirror) {
+    ], function(CodeMirror, marked, toolbarTPL) {
+      var extUITmpl = Handlebars.compile(toolbarTPL);
+      var extUI = extUITmpl({
+        id: extensionID
+      });
+      $containerElement.append(extUI);      
+      
+      //platformTuning();
+      if (isCordova) {
+        TSCORE.reLayout();
+      }
+      try {
+        $('#' + extensionID + 'Container [data-i18n]').i18n();
+        $('#aboutExtensionModal').on('show.bs.modal', function() {
+          $.ajax({
+            url: extensionDirectory + '/README.md',
+            type: 'GET'
+          })
+          .done(function(mdData) {
+            //console.log("DATA: " + mdData);
+            if (marked) {
+              var modalBody = $("#aboutExtensionModal .modal-body");
+              modalBody.html(marked(mdData, { sanitize: true }));
+              handleLinks(modalBody);
+            } else {
+              console.log("markdown to html transformer not found");
+            }  
+          })
+          .fail(function(data) {
+            console.warn("Loading file failed " + data);
+          });
+        }); 
+        
+        $("#printButton").on("click", function() {
+          $(".dropdown-menu").dropdown('toggle');
+          window.print();
+        });
+      
+        if (isCordova) {
+          $("#printButton").hide();
+        }          
+        
+      } catch (err) {
+        console.log("Failed translating extension");
+      }      
+      
+      
+      
       var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
       var lineNumbers = !isViewerMode;
       //var saveKB = convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding());
@@ -89,6 +140,10 @@ define(function(require, exports, module) {
       keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getCloseViewerKeyBinding())] = function() {
         TSCORE.FileOpener.closeFile();
       };
+
+      //console.warn("#aboutButton: " +document.getElementById("aboutButton"));
+      //console.warn("#aboutButton: " +template);
+       
 
       cmEditor = new CodeMirror(document.getElementById("code"), {
         fixedGutter: false,
@@ -120,6 +175,17 @@ define(function(require, exports, module) {
         TSCORE.hideLoadingAnimation();
         TSCORE.showAlertDialog("Loading " + filePath + " failed.");
         console.error("Loading file " + filePath + " failed " + error);
+      });
+    });
+  }
+
+  function handleLinks($element) {
+    $element.find("a[href]").each(function() {
+      var currentSrc = $(this).attr("href");
+      $(this).bind('click', function(e) {
+        e.preventDefault();
+        var msg = {command: "openLinkExternally", link : currentSrc};
+        window.parent.postMessage(JSON.stringify(msg), "*");
       });
     });
   }
