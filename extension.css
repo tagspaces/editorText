@@ -1,25 +1,26 @@
 .CodeMirror {
   font-size: 140%;
 }
-#aboutExtensionModal img {
+#aboutExtensionModalEditorText img {
   max-width: 100%;
 }
 
-#aboutExtensionModal h1 {
+#aboutExtensionModalEditorText h1 {
   font-size: 22px;
 }
 
-#aboutExtensionModal h2 {
+#aboutExtensionModalEditorText h2 {
   font-size: 20px;
 }
 
-#aboutExtensionModal h3 {
+#aboutExtensionModalEditorText h3 {
   font-size: 18px;
 }
 
-#aboutExtensionModal .modal-body {
+#aboutExtensionModalEditorText .modal-body {
   max-height: 500px;
   overflow: auto;
+  
 }
 
 body {
@@ -37,4 +38,13 @@ pre {
     color: #212121;
     background-color: white !important;
     border: none !important;    
+}
+/*
+.viewerMainMenuButton {
+    background-color: #42BEDB;
+}
+*/
+
+.modal-backdrop{
+  display:none; 
 }

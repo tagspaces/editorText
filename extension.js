@@ -3,7 +3,7 @@
 
 define(function(require, exports, module) {
   "use strict";
-
+  
   var extensionID = "editorText"; // ID should be equal to the directory name where the ext. is located
   var extensionSupportedFileTypes = [
     "h", "c", "clj", "coffee", "coldfusion", "cpp",
@@ -79,7 +79,8 @@ define(function(require, exports, module) {
       "text!" + extensionDirectory + '/toolbar.html',
       modePath,                   
       'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',      
-      'css!' + extensionDirectory + '/extension.css'
+      'css!' + extensionDirectory + '/extension.css',
+      'css!' + extensionDirectory + '/../../assets/tagspaces.css'
     ], function(CodeMirror, marked, toolbarTPL) {
       var extUITmpl = Handlebars.compile(toolbarTPL);
       var extUI = extUITmpl({
@@ -93,7 +94,8 @@ define(function(require, exports, module) {
       }
       try {
         $('#' + extensionID + 'Container [data-i18n]').i18n();
-        $('#aboutExtensionModal').on('show.bs.modal', function() {
+        $('#aboutExtensionModalEditorText').on('show.bs.modal', function() {
+          console.warn('#aboutExtensionModalEditorText click');
           $.ajax({
             url: extensionDirectory + '/README.md',
             type: 'GET'
@@ -101,7 +103,7 @@ define(function(require, exports, module) {
           .done(function(mdData) {
             //console.log("DATA: " + mdData);
             if (marked) {
-              var modalBody = $("#aboutExtensionModal .modal-body");
+              var modalBody = $("#aboutExtensionModalEditorText .modal-body");
               modalBody.html(marked(mdData, { sanitize: true }));
               handleLinks(modalBody);
             } else {
@@ -113,9 +115,10 @@ define(function(require, exports, module) {
           });
         }); 
         
-        $("#printButton").on("click", function() {
+        $("#printButton").on("click", function() {          
           $(".dropdown-menu").dropdown('toggle');
-          window.print();
+          //window.print();
+          printContent();
         });
       
         if (isCordova) {
@@ -188,6 +191,26 @@ define(function(require, exports, module) {
         window.parent.postMessage(JSON.stringify(msg), "*");
       });
     });
+  }
+
+
+ 
+  function printContent() {
+    var extUITmpl = Handlebars.compile(
+      '<iframe id="printerViewer" name="printerViewer" sandbox="allow-same-origin allow-scripts allow-modals" style="background-color: white; border: 0px;display:none;" class="flexMaxHeight" nwdisable="" src=""></iframe>'
+    );
+    var extUI = extUITmpl({});
+    if (window.frames.printerViewer) {       
+      document.getElementById("viewer").removeChild(document.getElementById("printerViewer"));
+    }
+    $("#viewer").append(extUI);  
+    var prtContent = document.getElementById("code");
+    var WinPrint =  window.frames.printerViewer;											
+    WinPrint.document.write("<html><head><head><body>" + prtContent.innerHTML + "</body></html>");
+    WinPrint.document.close();    
+    WinPrint.focus();		
+    WinPrint.print();		
+    document.getElementById("viewer").removeChild(document.getElementById("printerViewer"));    
   }
 
   // Converts mod+s to Ctrl+S
