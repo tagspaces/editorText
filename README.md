@@ -24,7 +24,7 @@ If you want to extend this extensions, please follow our general [extension deve
 
 ## Screenshots
 
-![Screenshot of the editorText](http://tagspaces.org/extensions/editorHTML/editorText-screenshot.png)
+![Screenshot of the editorText](https://www.tagspaces.org/extensions/editorText/editorText-screenshot.png)
 
 ## License
 
