@@ -127,10 +127,8 @@ define(function(require, exports, module) {
         
       } catch (err) {
         console.log("Failed translating extension");
-      }      
-      
-      
-      
+      }
+
       var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
       var lineNumbers = !isViewerMode;
       //var saveKB = convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding());
@@ -143,10 +141,6 @@ define(function(require, exports, module) {
       keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getCloseViewerKeyBinding())] = function() {
         TSCORE.FileOpener.closeFile();
       };
-
-      //console.warn("#aboutButton: " +document.getElementById("aboutButton"));
-      //console.warn("#aboutButton: " +template);
-       
 
       cmEditor = new CodeMirror(document.getElementById("code"), {
         fixedGutter: false,
@@ -193,8 +187,6 @@ define(function(require, exports, module) {
     });
   }
 
-
- 
   function printContent() {
     var extUITmpl = Handlebars.compile(
       '<iframe id="printerViewer" name="printerViewer" sandbox="allow-same-origin allow-scripts allow-modals" style="background-color: white; border: 0px;display:none;" class="flexMaxHeight" nwdisable="" src=""></iframe>'
@@ -210,7 +202,7 @@ define(function(require, exports, module) {
     WinPrint.document.close();    
     WinPrint.focus();		
     WinPrint.print();		
-    document.getElementById("viewer").removeChild(document.getElementById("printerViewer"));    
+    document.getElementById("viewer").removeChild(document.getElementById("printerViewer"));
   }
 
   // Converts mod+s to Ctrl+S
