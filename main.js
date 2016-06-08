@@ -8,6 +8,11 @@ var isCordova;
 var isWin;
 var isWeb;
 
+var keys;
+var isViewerMode;
+var contentLoaded = false;
+var cmEditor;
+
 $(document).ready(function() {
   function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -97,16 +102,65 @@ function setContent(content, filePath) {
     console.log("Set Main Content");
     console.debug(content);
     console.log("--------------");
+    console.debug(filePath);
+    console.log("--------------");
   } else {
     console.log("Undefined value");
   }
 
- // var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-  //var lineNumbers = !isViewerMode;
+  var filetype = [];
+  filetype.h = "clike";
+  filetype.c = "clike";
+  filetype.clj = "clojure";
+  filetype.coffee = "coffeescript";
+  filetype.cpp = "clike";
+  filetype.cs = "clike";
+  filetype.css = "css";
+  filetype.groovy = "groovy";
+  filetype.haxe = "haxe";
+  filetype.htm = "xml";
+  filetype.html = "xml";
+  filetype.java = "clike";
+  filetype.js = "javascript";
+  filetype.jsm = "javascript";
+  filetype.json = "javascript";
+  filetype.less = "less";
+  filetype.lua = "lua";
+  filetype.markdown = "markdown";
+  filetype.md = "markdown";
+  filetype.mdown = "markdown";
+  filetype.mdwn = "markdown";
+  filetype.mkd = "markdown";
+  filetype.ml = "ocaml";
+  filetype.mli = "ocaml";
+  filetype.pl = "perl";
+  filetype.php = "php";
+  filetype.py = "python";
+  filetype.rb = "ruby";
+  filetype.sh = "shell";
+  filetype.sql = "sql";
+  filetype.svg = "xml";
+  filetype.xml = "xml";
+
+  var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
+  console.log("File Extension");
+  console.debug(fileExt);
+  console.log("--------------");
+
+  var extensionDirectory = filePath;
+  var mode = filetype[fileExt];
+  var modePath;
+  if (mode) {
+    modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
+  }
+
+  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
+  var lineNumbers = !isViewerMode;
   var contentLoaded = false;
   var $htmlContent = $("#editorText");
 
-  var cmEditor = new CodeMirror(document.getElementById("editorText"), {
+
+  cmEditor = new CodeMirror(document.getElementById("editorText"), {
     fixedGutter: false,
     //mode: mode,
     //lineNumbers: lineNumbers,
@@ -116,7 +170,7 @@ function setContent(content, filePath) {
     collapseRange: true,
     matchBrackets: true,
     //cursorBlinkRate: cursorBlinkRate,
-    //readOnly: isViewerMode ? "nocursor" : isViewerMode,
+    readOnly: isViewerMode ? "nocursor" : isViewerMode,
     autofocus: true,
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
@@ -140,7 +194,14 @@ function setContent(content, filePath) {
   $htmlContent.append(cmEditor);
 }
 
-//function viewerMode(isViewerMode) {
-//
-//  cmEditor.readOnly = isViewerMode;
-//}
+function viewerMode(isViewerMode) {
+  console.log("");
+  console.log("isViewerMODE");
+  console.debug(isViewerMode);
+  isViewer = isViewerMode;
+  if (isViewerMode) {
+    cmEditor.readOnly = isViewerMode;
+  } else {
+    console.log("Incorrect isViewerMode");
+  }
+}

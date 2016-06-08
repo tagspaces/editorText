@@ -5,16 +5,6 @@ define(function(require, exports, module) {
   "use strict";
 
   var extensionID = "editorText"; // ID should be equal to the directory name where the ext. is located
-  var extensionSupportedFileTypes = [
-    "h", "c", "clj", "coffee", "coldfusion", "cpp",
-    "cs", "css", "groovy", "haxe", "htm", "html",
-    "java", "js", "jsm", "json", "latex", "less",
-    "ly", "ily", "lua", "markdown", "md", "mdown",
-    "mdwn", "mkd", "ml", "mli", "pl", "php",
-    "powershell", "py", "rb", "scad", "scala",
-    "scss", "sh", "sql", "svg", "textile", "txt", "xml"
-  ];
-
   console.log("Loading " + extensionID);
 
   var TSCORE = require("tscore");
@@ -61,7 +51,7 @@ define(function(require, exports, module) {
   filetype.svg = "xml";
   filetype.xml = "xml";
 
-  function init(filePath, containerElementID, isViewerMode) {
+  function init(filePath, containerElementID, isViewer) {
     console.log("Initalization Text Editor...");
     containerElementID = containerElementID;
     $containerElement = $('#' + containerElementID);
@@ -79,36 +69,36 @@ define(function(require, exports, module) {
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
       setContent(content);
-      //viewerMode(isViewer);
+      viewerMode(isViewer);
     }, function(error) {
       TSCORE.hideLoadingAnimation();
       TSCORE.showAlertDialog("Loading " + filePath + " failed.");
       console.error("Loading file " + filePath + " failed " + error);
     });
 
-    var mode = filetype[fileExt];
-    var modePath;
-    if (mode) {
-      modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
-    }
-
-    require([
-      extensionDirectory + '/libs/codemirror/lib/codemirror',
-      //extensionDirectory + '/libs/codemirror/addon/search/search',
-      //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
-      "marked",
-      "text!" + extensionDirectory + '/toolbar.html',
-      modePath,
-      'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
-      'css!' + extensionDirectory + '/extension.css',
-      'css!' + extensionDirectory + '/../../assets/tagspaces.css'
-    ], function(CodeMirror, marked, toolbarTPL) {
-      var extUITmpl = Handlebars.compile(toolbarTPL);
-      var extUI = extUITmpl({
-        id: extensionID
-      });
-      $containerElement.append(extUI);
-    });
+    //var mode = filetype[fileExt];
+    //var modePath;
+    //if (mode) {
+    //  modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
+    //}
+    //
+    //require([
+    //  extensionDirectory + '/libs/codemirror/lib/codemirror',
+    //  //extensionDirectory + '/libs/codemirror/addon/search/search',
+    //  //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
+    //  "marked",
+    //  "text!" + extensionDirectory + '/toolbar.html',
+    //  modePath,
+    //  'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
+    //  'css!' + extensionDirectory + '/extension.css',
+    //  'css!' + extensionDirectory + '/../../assets/tagspaces.css'
+    //], function(CodeMirror, marked, toolbarTPL) {
+    //  var extUITmpl = Handlebars.compile(toolbarTPL);
+    //  var extUI = extUITmpl({
+    //    id: extensionID
+    //  });
+    //  $containerElement.append(extUI);
+    //});
 
     //keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding())] = function() {
     //  TSCORE.FileOpener.saveFile();
@@ -117,30 +107,7 @@ define(function(require, exports, module) {
     //keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getCloseViewerKeyBinding())] = function() {
     //  TSCORE.FileOpener.closeFile();
     //};
-    //
-    //cmEditor = new CodeMirror(document.getElementById("code"), {
-    //  fixedGutter: false,
-    //  mode: mode,
-    //  lineNumbers: lineNumbers,
-    //  lineWrapping: true,
-    //  tabSize: 2,
-    //  //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
-    //  collapseRange: true,
-    //  matchBrackets: true,
-    //  cursorBlinkRate: cursorBlinkRate,
-    //  readOnly: isViewerMode ? "nocursor" : isViewerMode,
-    //  autofocus: true,
-    //  //theme: "lesser-dark",
-    //  //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
-    //});
-    //
-    //cmEditor.on("change", function() {
-    //  if (contentLoaded) {
-    //    TSCORE.FileOpener.setFileChanged(true);
-    //  }
-    //});
-    //
-    //cmEditor.setSize("100%", "100%");
+
     //TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
     //  exports.setContent(content);
     //},
@@ -166,8 +133,17 @@ define(function(require, exports, module) {
   }
 
   function viewerMode(isViewerMode) {
-
-    cmEditor.readOnly = isViewerMode;
+    var contentWindow = document.getElementById("iframeViewer").contentWindow;
+    if (typeof contentWindow.viewerMode === "function") {
+      contentWindow.viewerMode(isViewerMode);
+    } else {
+      window.setTimeout(function() {
+        if (typeof contentWindow.viewerMode === "function") {
+          contentWindow.viewerMode(isViewerMode);
+        }
+      } , 500);
+    }
+    //cmEditor.readOnly = isViewerMode;
   }
 
   function setContent(content) {
