@@ -11,7 +11,7 @@ var isWeb;
 var keys;
 var isViewerMode;
 var contentLoaded = false;
-var cmEditor;
+
 
 $(document).ready(function() {
   function getParameterByName(name) {
@@ -88,7 +88,7 @@ $(document).ready(function() {
 });
 
 var editorText;
-var isViewer = true;
+//var isViewer = true;
 var filePath;
 
 function contentChanged() {
@@ -97,6 +97,7 @@ function contentChanged() {
   window.parent.postMessage(JSON.stringify(msg), "*");
 }
 
+var cmEditor;
 function setContent(content, filePath) {
   if (content !== undefined || content !== null) {
     console.log("Set Main Content");
@@ -107,7 +108,7 @@ function setContent(content, filePath) {
   } else {
     console.log("Undefined value");
   }
-
+  var $htmlContent = $("#editorText");
   var filetype = [];
   filetype.h = "clike";
   filetype.c = "clike";
@@ -141,36 +142,52 @@ function setContent(content, filePath) {
   filetype.sql = "sql";
   filetype.svg = "xml";
   filetype.xml = "xml";
+  filetype.txt = "txt";
 
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
   console.log("File Extension");
   console.debug(fileExt);
   console.log("--------------");
 
-  var extensionDirectory = filePath;
+  //var extensionDirectory = filePath;
   var mode = filetype[fileExt];
+  console.log("Mode is : " + mode);
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
   }
 
+  require([
+    extensionDirectory + '/libs/codemirror/lib/codemirror',
+    //extensionDirectory + '/libs/codemirror/addon/search/search',
+    //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
+    modePath,
+    'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
+    'css!' + extensionDirectory + '/extension.css'
+  ], function(CodeMirror) {
+
+  });
+
   var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
+  console.debug(cursorBlinkRate);
+  console.log("Cursor Blink: " + cursorBlinkRate);
   var lineNumbers = !isViewerMode;
-  var contentLoaded = false;
-  var $htmlContent = $("#editorText");
+  console.debug(lineNumbers);
+  console.log("Line Number: " + lineNumbers);
+  //var saveKB = convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding());
 
-
-  cmEditor = new CodeMirror(document.getElementById("editorText"), {
+  //cmEditor = new CodeMirror(document.getElementById("code"), {
+  cmEditor = new CodeMirror(document.getElementById('editorText'), {
     fixedGutter: false,
-    //mode: mode,
+    mode: mode,
     //lineNumbers: lineNumbers,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
     collapseRange: true,
     matchBrackets: true,
-    //cursorBlinkRate: cursorBlinkRate,
-    readOnly: isViewerMode ? "nocursor" : isViewerMode,
+    cursorBlinkRate: cursorBlinkRate,
+    readOnly: isViewerMode ? "nocursor" : false,//isViewerMode,
     autofocus: true,
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
@@ -181,27 +198,35 @@ function setContent(content, filePath) {
   cmEditor.on("change", function() {
     if (contentLoaded) {
       //TSCORE.FileOpener.setFileChanged(true);
-      console.log("cmEditor Content Changed");
     }
   });
 
   cmEditor.setSize("100%", "100%");
 
+  //console.log("Content: "+content);
+  var UTF8_BOM = "\ufeff";
+  if (content.indexOf(UTF8_BOM) === 0) {
+    content = content.substring(1, content.length);
+  }
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
 
   $htmlContent.append(cmEditor);
+  //contentLoaded = true;
 }
 
 function viewerMode(isViewerMode) {
+  var lineNumbers = !isViewerMode;
+  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
+
   console.log("");
   console.log("isViewerMODE");
   console.debug(isViewerMode);
-  isViewer = isViewerMode;
-  if (isViewerMode) {
-    cmEditor.readOnly = isViewerMode;
-  } else {
-    console.log("Incorrect isViewerMode");
-  }
+
+  cmEditor.readOnly = isViewerMode;
+  cmEditor.lineNumbers = lineNumbers;
+  console.debug(cmEditor.lineNumbers = lineNumbers);
+  cmEditor.cursorBlinkRate = cursorBlinkRate;
+  console.debug(cmEditor.cursorBlinkRate = cursorBlinkRate);
 }

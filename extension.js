@@ -76,30 +76,6 @@ define(function(require, exports, module) {
       console.error("Loading file " + filePath + " failed " + error);
     });
 
-    //var mode = filetype[fileExt];
-    //var modePath;
-    //if (mode) {
-    //  modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
-    //}
-    //
-    //require([
-    //  extensionDirectory + '/libs/codemirror/lib/codemirror',
-    //  //extensionDirectory + '/libs/codemirror/addon/search/search',
-    //  //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
-    //  "marked",
-    //  "text!" + extensionDirectory + '/toolbar.html',
-    //  modePath,
-    //  'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
-    //  'css!' + extensionDirectory + '/extension.css',
-    //  'css!' + extensionDirectory + '/../../assets/tagspaces.css'
-    //], function(CodeMirror, marked, toolbarTPL) {
-    //  var extUITmpl = Handlebars.compile(toolbarTPL);
-    //  var extUI = extUITmpl({
-    //    id: extensionID
-    //  });
-    //  $containerElement.append(extUI);
-    //});
-
     //keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding())] = function() {
     //  TSCORE.FileOpener.saveFile();
     //};
@@ -146,11 +122,11 @@ define(function(require, exports, module) {
     //cmEditor.readOnly = isViewerMode;
   }
 
-  function setContent(content) {
+  function setContent(content, isViewerMode) {
     console.log("Extension content");
     console.debug(content);
     console.log("--------------");
-    //console.log("Content: "+content);
+
     var UTF8_BOM = "\ufeff";
     if (content.indexOf(UTF8_BOM) === 0) {
       content = content.substring(1, content.length);
@@ -159,6 +135,10 @@ define(function(require, exports, module) {
     var contentWindow = document.getElementById("iframeViewer").contentWindow;
     if (typeof contentWindow.setContent === "function") {
       console.log(content);
+      contentWindow.require = require;
+      //contentWindow.keys = keys;
+      contentWindow.isViewerMode = isViewerMode;
+      contentWindow.extensionDirectory = extensionDirectory;
       contentWindow.setContent(content , currentFilePath);
     } else {
       window.setTimeout(function() {
