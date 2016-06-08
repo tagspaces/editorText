@@ -106,7 +106,7 @@ function setContent(content, filePath) {
   var contentLoaded = false;
   var $htmlContent = $("#editorText");
 
-  var cmEditor = new CodeMirror($htmlContent, {
+  var cmEditor = new CodeMirror(document.getElementById("editorText"), {
     fixedGutter: false,
     //mode: mode,
     //lineNumbers: lineNumbers,
