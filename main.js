@@ -167,14 +167,15 @@ function setContent(content, filePath) {
     collapseRange: true,
     matchBrackets: true,
     //cursorBlinkRate: cursorBlinkRate,
-    readOnly: isViewerMode ? "nocursor" : isViewerMode,
+    //readOnly: isViewerMode ? "nocursor" : isViewerMode,
     autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
+
   if (mode) {
     cmEditor.setOption("mode", mode);
-    CodeMirror.autoLoadMode(cmEditor, modePath);
+    CodeMirror.autoLoadMode(cmEditor, mode);
   } else {
     console.log("Invalid mode !");
   }
@@ -195,8 +196,6 @@ function setContent(content, filePath) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
-
-
   //contentLoaded = true;
 }
 
