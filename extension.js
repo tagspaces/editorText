@@ -16,41 +16,6 @@ define(function(require, exports, module) {
   var cmEditor;
   var contentLoaded = false;
 
-
-  var filetype = [];
-  filetype.h = "clike";
-  filetype.c = "clike";
-  filetype.clj = "clojure";
-  filetype.coffee = "coffeescript";
-  filetype.cpp = "clike";
-  filetype.cs = "clike";
-  filetype.css = "css";
-  filetype.groovy = "groovy";
-  filetype.haxe = "haxe";
-  filetype.htm = "xml";
-  filetype.html = "xml";
-  filetype.java = "clike";
-  filetype.js = "javascript";
-  filetype.jsm = "javascript";
-  filetype.json = "javascript";
-  filetype.less = "less";
-  filetype.lua = "lua";
-  filetype.markdown = "markdown";
-  filetype.md = "markdown";
-  filetype.mdown = "markdown";
-  filetype.mdwn = "markdown";
-  filetype.mkd = "markdown";
-  filetype.ml = "ocaml";
-  filetype.mli = "ocaml";
-  filetype.pl = "perl";
-  filetype.php = "php";
-  filetype.py = "python";
-  filetype.rb = "ruby";
-  filetype.sh = "shell";
-  filetype.sql = "sql";
-  filetype.svg = "xml";
-  filetype.xml = "xml";
-
   function init(filePath, containerElementID, isViewer) {
     console.log("Initalization Text Editor...");
     containerElementID = containerElementID;
@@ -119,13 +84,9 @@ define(function(require, exports, module) {
         }
       } , 500);
     }
-    //cmEditor.readOnly = isViewerMode;
   }
 
   function setContent(content, isViewerMode) {
-    console.log("Extension content");
-    console.debug(content);
-    console.log("--------------");
 
     var UTF8_BOM = "\ufeff";
     if (content.indexOf(UTF8_BOM) === 0) {
@@ -134,7 +95,6 @@ define(function(require, exports, module) {
 
     var contentWindow = document.getElementById("iframeViewer").contentWindow;
     if (typeof contentWindow.setContent === "function") {
-      console.log(content);
       contentWindow.require = require;
       //contentWindow.keys = keys;
       contentWindow.isViewerMode = isViewerMode;
@@ -147,10 +107,7 @@ define(function(require, exports, module) {
         }
       } , 500);
     }
-    /*    cmEditor.setValue(content);
-     cmEditor.clearHistory();
-     cmEditor.refresh();
-     contentLoaded = true;*/
+
   }
 
   function getContent() {

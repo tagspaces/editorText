@@ -101,14 +101,13 @@ var cmEditor;
 function setContent(content, filePath) {
   if (content !== undefined || content !== null) {
     console.log("Set Main Content");
-    console.debug(content);
-    console.log("--------------");
     console.debug(filePath);
     console.log("--------------");
-  } else {
-    console.log("Undefined value");
   }
+
   var $htmlContent = $("#editorText");
+  $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
+
   var filetype = [];
   filetype.h = "clike";
   filetype.c = "clike";
@@ -155,6 +154,7 @@ function setContent(content, filePath) {
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
+    console.debug(modePath);
   }
 
   require([
@@ -169,18 +169,13 @@ function setContent(content, filePath) {
   });
 
   var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-  console.debug(cursorBlinkRate);
-  console.log("Cursor Blink: " + cursorBlinkRate);
   var lineNumbers = !isViewerMode;
-  console.debug(lineNumbers);
-  console.log("Line Number: " + lineNumbers);
-  //var saveKB = convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding());
 
-  //cmEditor = new CodeMirror(document.getElementById("code"), {
-  cmEditor = new CodeMirror(document.getElementById('editorText'), {
+  var place = document.getElementById("code");
+  cmEditor = new CodeMirror(place, {
     fixedGutter: false,
     mode: mode,
-    //lineNumbers: lineNumbers,
+    lineNumbers: lineNumbers,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
@@ -189,9 +184,11 @@ function setContent(content, filePath) {
     cursorBlinkRate: cursorBlinkRate,
     readOnly: isViewerMode ? "nocursor" : false,//isViewerMode,
     autofocus: true,
-    //theme: "lesser-dark",
+    theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
+
+  cmEditor.setOption("mode", mode);
 
   console.debug(cmEditor);
 
@@ -212,7 +209,6 @@ function setContent(content, filePath) {
   cmEditor.clearHistory();
   cmEditor.refresh();
 
-  $htmlContent.append(cmEditor);
   //contentLoaded = true;
 }
 
@@ -225,8 +221,8 @@ function viewerMode(isViewerMode) {
   console.debug(isViewerMode);
 
   cmEditor.readOnly = isViewerMode;
-  cmEditor.lineNumbers = lineNumbers;
-  console.debug(cmEditor.lineNumbers = lineNumbers);
-  cmEditor.cursorBlinkRate = cursorBlinkRate;
-  console.debug(cmEditor.cursorBlinkRate = cursorBlinkRate);
+  //cmEditor.lineNumbers = lineNumbers;
+  //console.debug(cmEditor.lineNumbers = lineNumbers);
+  //cmEditor.cursorBlinkRate = cursorBlinkRate;
+  //console.debug(cmEditor.cursorBlinkRate = cursorBlinkRate);
 }
