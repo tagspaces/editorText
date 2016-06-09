@@ -9,7 +9,6 @@ var isWin;
 var isWeb;
 
 var keys;
-var isViewerMode;
 var contentLoaded = false;
 
 
@@ -157,50 +156,38 @@ function setContent(content, filePath) {
     console.debug(modePath);
   }
 
-  require([
-    extensionDirectory + '/libs/codemirror/lib/codemirror',
-    //extensionDirectory + '/libs/codemirror/addon/search/search',
-    //extensionDirectory + '/libs/codemirror/addon/search/searchcursor',
-    modePath,
-    'css!' + extensionDirectory + '/libs/codemirror/lib/codemirror.css',
-    'css!' + extensionDirectory + '/extension.css'
-  ], function(CodeMirror) {
-
-  });
-
-  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var lineNumbers = !isViewerMode;
-
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     fixedGutter: false,
     mode: mode,
-    lineNumbers: lineNumbers,
+    lineNumbers: false,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
     collapseRange: true,
     matchBrackets: true,
-    cursorBlinkRate: cursorBlinkRate,
-    readOnly: isViewerMode ? "nocursor" : false,//isViewerMode,
-    autofocus: true,
-    theme: "lesser-dark",
+    //cursorBlinkRate: cursorBlinkRate,
+    readOnly: isViewerMode ? "nocursor" : isViewerMode,
+    autofocus: true
+    //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
-
-  cmEditor.setOption("mode", mode);
-
+  if (mode) {
+    cmEditor.setOption("mode", mode);
+    CodeMirror.autoLoadMode(cmEditor, modePath);
+  } else {
+    console.log("Invalid mode !");
+  }
   console.debug(cmEditor);
 
-  cmEditor.on("change", function() {
-    if (contentLoaded) {
-      //TSCORE.FileOpener.setFileChanged(true);
-    }
-  });
+  //cmEditor.on("change", function() {
+  //  if (contentLoaded) {
+  //    //TSCORE.FileOpener.setFileChanged(true);
+  //  }
+  //});
 
   cmEditor.setSize("100%", "100%");
 
-  //console.log("Content: "+content);
   var UTF8_BOM = "\ufeff";
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
@@ -209,20 +196,17 @@ function setContent(content, filePath) {
   cmEditor.clearHistory();
   cmEditor.refresh();
 
+
   //contentLoaded = true;
 }
 
 function viewerMode(isViewerMode) {
-  var lineNumbers = !isViewerMode;
-  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-
-  console.log("");
   console.log("isViewerMODE");
   console.debug(isViewerMode);
 
-  cmEditor.readOnly = isViewerMode;
-  //cmEditor.lineNumbers = lineNumbers;
-  //console.debug(cmEditor.lineNumbers = lineNumbers);
+  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
+  var lineNumbers = !isViewerMode;
+
+  //cmEditor.readOnly = isViewerMode ? "nocursor" : isViewerMode;
   //cmEditor.cursorBlinkRate = cursorBlinkRate;
-  //console.debug(cmEditor.cursorBlinkRate = cursorBlinkRate);
 }

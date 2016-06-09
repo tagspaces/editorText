@@ -8,28 +8,24 @@ define(function(require, exports, module) {
   console.log("Loading " + extensionID);
 
   var TSCORE = require("tscore");
-  var containerElID;
   var currentFilePath;
   var $containerElement;
-  var extensionsPath = TSCORE.Config.getExtensionPath();
   var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + extensionID;
   var cmEditor;
   var contentLoaded = false;
 
   function init(filePath, containerElementID, isViewer) {
     console.log("Initalization Text Editor...");
-    containerElementID = containerElementID;
     $containerElement = $('#' + containerElementID);
 
     currentFilePath = filePath;
     $containerElement.empty();
-    //$containerElement.css("background-color" , "white");
+    $containerElement.css("background-color" , "white");
     $containerElement.append($('<iframe>', {
       sandbox: "allow-same-origin allow-scripts allow-modals",
       id: "iframeViewer",
       "nwdisable": "",
-      //"nwfaketop": "",
-      "src": extensionDirectory + "/index.html?&locale=" + TSCORE.currentLanguage,
+      "src": extensionDirectory + "/index.html?&locale=" + TSCORE.currentLanguage
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
@@ -86,7 +82,7 @@ define(function(require, exports, module) {
     }
   }
 
-  function setContent(content, isViewerMode) {
+  function setContent(content) {
 
     var UTF8_BOM = "\ufeff";
     if (content.indexOf(UTF8_BOM) === 0) {
@@ -96,7 +92,7 @@ define(function(require, exports, module) {
     var contentWindow = document.getElementById("iframeViewer").contentWindow;
     if (typeof contentWindow.setContent === "function") {
       contentWindow.require = require;
-      //contentWindow.keys = keys;
+      var isViewerMode = true;
       contentWindow.isViewerMode = isViewerMode;
       contentWindow.extensionDirectory = extensionDirectory;
       contentWindow.setContent(content , currentFilePath);
