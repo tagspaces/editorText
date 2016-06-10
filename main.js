@@ -173,6 +173,7 @@ function setContent(content, filePath) {
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
 
+  CodeMirror.modeURL = "libs/codemirror/mode/%N/%N.js";
   if (mode) {
     cmEditor.setOption("mode", mode);
     CodeMirror.autoLoadMode(cmEditor, mode);

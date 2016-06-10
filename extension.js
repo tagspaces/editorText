@@ -99,6 +99,10 @@ define(function(require, exports, module) {
     } else {
       window.setTimeout(function() {
         if (typeof contentWindow.setContent === "function") {
+          contentWindow.require = require;
+          var isViewerMode = true;
+          contentWindow.isViewerMode = isViewerMode;
+          contentWindow.extensionDirectory = extensionDirectory;
           contentWindow.setContent(content, currentFilePath);
         }
       } , 500);
