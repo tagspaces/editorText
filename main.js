@@ -112,8 +112,6 @@ $(document).ready(function() {
 });
 
 var editorText;
-//var isViewer = true;
-
 var cmEditor;
 function setContent(content, filePath) {
 
