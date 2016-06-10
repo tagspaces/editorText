@@ -7,6 +7,7 @@
   <script type="text/javascript" src="../../libs/bootstrap/dist/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="../../libs/i18next/i18next.min.js"></script>
   <script type="text/javascript" src="../../libs/marked/marked.min.js"></script>
+  <script type="text/javascript" src="../../libs/mousetrap/mousetrap.min.js"></script>
   <script type="text/javascript" src="libs/codemirror/lib/codemirror.js"></script>
   <script type="text/javascript" src="libs/addon/mode/loadmode.js"></script>
   <script type="text/javascript" src="main.js"></script>
@@ -25,11 +26,17 @@
     <li class="dropdown-header">
       <button class="close">&times;</button>&nbsp;
     </li>
-    <li class="divider"></li>
-    <li><a id="changeStyleButton">
-      <i class="fa fa-adjust fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:changeTheme"></span>
+    <!--<li class="divider"></li>-->
+    <!--<li><a id="changeStyleButton">-->
+      <!--<i class="fa fa-adjust fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:changeTheme"></span>-->
+    <!--</a></li>-->
+    <li><a id="saveEditorText">
+      <i class="fa fa-save fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:save"></span>
     </a></li>
     <li class="divider"></li>
+    <li><a id="printButton">
+      <i class="fa fa-print fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:print"></span>
+    </a></li>
     <li><a id="aboutButton">
       <i class="fa fa-comment fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:about"></span>
     </a></li>

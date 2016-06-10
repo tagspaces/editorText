@@ -11,8 +11,6 @@ define(function(require, exports, module) {
   var currentFilePath;
   var $containerElement;
   var extensionDirectory = TSCORE.Config.getExtensionPath() + "/" + extensionID;
-  var cmEditor;
-  var contentLoaded = false;
 
   function init(filePath, containerElementID, isViewer) {
     console.log("Initalization Text Editor...");
@@ -37,36 +35,6 @@ define(function(require, exports, module) {
       console.error("Loading file " + filePath + " failed " + error);
     });
 
-    //keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getSaveDocumentKeyBinding())] = function() {
-    //  TSCORE.FileOpener.saveFile();
-    //};
-    //
-    //keys[convertMouseTrapToCodeMirrorKeyBindings(TSCORE.Config.getCloseViewerKeyBinding())] = function() {
-    //  TSCORE.FileOpener.closeFile();
-    //};
-
-    //TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-    //  exports.setContent(content);
-    //},
-    //function(error) {
-    //  TSCORE.hideLoadingAnimation();
-    //  TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-    //  console.error("Loading file " + filePath + " failed " + error);
-    //});
-    //});
-  }
-
-  // Converts mod+s to Ctrl+S
-  function convertMouseTrapToCodeMirrorKeyBindings(keyBinding) {
-    if (keyBinding.indexOf("+") < 0) {
-      return;
-    }
-    var key = keyBinding.split("+");
-    if (key[0] === "mod") {
-      isOSX ? key[0] = "cmd" : key[0] = "ctrl";
-    }
-    key[0] = key[0].charAt(0).toUpperCase() + key[0].slice(1);
-    return key[0] + "-" + key[1].toUpperCase();
   }
 
   function viewerMode(isViewerMode) {
@@ -110,8 +78,8 @@ define(function(require, exports, module) {
   }
 
   function getContent() {
-
-    return cmEditor.getValue();
+    var contentWindow = document.getElementById("iframeViewer").contentWindow;
+    return contentWindow.cmEditor.getValue();
   }
 
   exports.init = init;

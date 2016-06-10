@@ -1,16 +1,11 @@
 /* Copyright (c) 2013-2016 The TagSpaces Authors.
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
-/* globals JSONEditor */
-/* globals marked */
+/* globals marked, Mousetrap */
 "use strict";
 
 var isCordova;
 var isWin;
 var isWeb;
-
-var keys;
-var contentLoaded = false;
-
 
 $(document).ready(function() {
   function getParameterByName(name) {
@@ -66,9 +61,17 @@ $(document).ready(function() {
     $("#aboutExtensionModal").modal({show: true});
   });
 
+  $("#printButton").on("click", function(e) {
+    window.print();
+  });
+
   if (isCordova) {
     $("#printButton").hide();
   }
+
+  $('#saveEditorText').on('click', function(e) {
+    saveEditorText();
+  });
 
   // Init internationalization
   $.i18n.init({
@@ -84,25 +87,35 @@ $(document).ready(function() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
   }
 
+  Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
+    console.log('Content save');
+    saveEditorText();
+    //return false;
+  });
+
+  function saveEditorText() {
+    var msg = {command: "saveDocument", filepath: filePath};
+    window.parent.postMessage(JSON.stringify(msg), "*");
+  }
+
+  var filePath;
+
+  //function contentChanged() {
+  //  console.log('Content changed');
+  //  var msg = {command: "contentChangedInEditor", filepath: filePath};
+  //  window.parent.postMessage(JSON.stringify(msg), "*");
+  //}
+  //
+  //document.querySelector('saveDocument').addEventListener('saveDocument', function(event) {
+  //  contentChanged()
+  //});
 });
 
 var editorText;
 //var isViewer = true;
-var filePath;
-
-function contentChanged() {
-  //console.log('Content changed');
-  var msg = {command: "contentChangedInEditor", filepath: filePath};
-  window.parent.postMessage(JSON.stringify(msg), "*");
-}
 
 var cmEditor;
 function setContent(content, filePath) {
-  if (content !== undefined || content !== null) {
-    console.log("Set Main Content");
-    console.debug(filePath);
-    console.log("--------------");
-  }
 
   var $htmlContent = $("#editorText");
   $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
@@ -156,11 +169,17 @@ function setContent(content, filePath) {
     console.debug(modePath);
   }
 
+  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
+  var lineNumbers = !isViewerMode;
+  console.log(isViewerMode);
+
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     fixedGutter: false,
     mode: mode,
-    lineNumbers: false,
+    styleSelectedText: true,
+    styleActiveLine: true,
+    lineNumbers: true,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
@@ -197,16 +216,10 @@ function setContent(content, filePath) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
-  //contentLoaded = true;
 }
 
 function viewerMode(isViewerMode) {
   console.log("isViewerMODE");
   console.debug(isViewerMode);
-
-  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var lineNumbers = !isViewerMode;
-
-  //cmEditor.readOnly = isViewerMode ? "nocursor" : isViewerMode;
-  //cmEditor.cursorBlinkRate = cursorBlinkRate;
+  cmEditor.readOnly = isViewerMode;
 }

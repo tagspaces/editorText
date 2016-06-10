@@ -1,7 +1,8 @@
 {
-    "changeTheme": "Change Theme",
-    "print": "Print",
-    "about": "About",
-    "aboutTitle": "About editorText extension",
-    "-": "-"
+  "changeTheme": "Change Theme",
+  "save": "Save",
+  "print": "Print",
+  "about": "About",
+  "aboutTitle": "About editorText extension",
+  "-": "-"
 }
