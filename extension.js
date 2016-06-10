@@ -99,11 +99,10 @@ define(function(require, exports, module) {
     } else {
       window.setTimeout(function() {
         if (typeof contentWindow.setContent === "function") {
-          contentWindow.setContent(content);
+          contentWindow.setContent(content, currentFilePath);
         }
       } , 500);
     }
-
   }
 
   function getContent() {
