@@ -79,8 +79,8 @@
 
   function parseString(string) {
     return string.replace(/\\(.)/g, function(_, ch) {
-      if (ch == "n") return "\n"
-      if (ch == "r") return "\r"
+      if (ch == "n") return "\n";
+      if (ch == "r") return "\r";
       return ch
     })
   }
@@ -99,7 +99,7 @@
   }
 
   var queryDialog =
-          'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+          'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint"></span>';
 
   function startSearch(cm, state, query) {
     state.queryText = query;
@@ -118,7 +118,7 @@
     if (state.query) return findNext(cm, rev);
     var q = cm.getSelection() || state.lastQuery;
     if (persistent && cm.openDialog) {
-      var hiding = null
+      var hiding = null;
       var searchNext = function(query, event) {
         CodeMirror.e_stop(event);
         if (!query) return;
@@ -126,9 +126,9 @@
           startSearch(cm, state, query);
           state.posFrom = state.posTo = cm.getCursor();
         }
-        if (hiding) hiding.style.opacity = 1
+        if (hiding) hiding.style.opacity = 1;
         findNext(cm, event.shiftKey, function(_, to) {
-          var dialog
+          var dialog;
           if (to.line < 3 && document.querySelector &&
                   (dialog = cm.display.wrapper.querySelector(".CodeMirror-dialog")) &&
                   dialog.getBoundingClientRect().bottom - 4 > cm.cursorCoords(to, "window").top)
@@ -202,12 +202,12 @@
   function replace(cm, all) {
     if (cm.getOption("readOnly")) return;
     var query = cm.getSelection() || getSearchState(cm).lastQuery;
-    var dialogText = all ? "Replace all:" : "Replace:"
+    var dialogText = all ? "Replace all:" : "Replace:";
     dialog(cm, dialogText + replaceQueryDialog, dialogText, query, function(query) {
       if (!query) return;
       query = parseQuery(query);
       dialog(cm, replacementQueryDialog, "Replace with:", "", function(text) {
-        text = parseString(text)
+        text = parseString(text);
         if (all) {
           replaceAll(cm, query, text)
         } else {

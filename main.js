@@ -88,9 +88,9 @@ $(document).ready(function() {
   }
 
   Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
-    console.log('Content save');
+    console.log("save");
     saveEditorText();
-    //return false;
+    return false;
   });
 
   function saveEditorText() {
@@ -160,7 +160,6 @@ function setContent(content, filePath) {
 
   //var extensionDirectory = filePath;
   var mode = filetype[fileExt];
-  console.log("Mode is : " + mode);
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
