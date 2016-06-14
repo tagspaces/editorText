@@ -18,7 +18,7 @@ define(function(require, exports, module) {
 
     currentFilePath = filePath;
     $containerElement.empty();
-    $containerElement.css("background-color" , "white");
+    $containerElement.css("background-color", "white");
     $containerElement.append($('<iframe>', {
       sandbox: "allow-same-origin allow-scripts allow-modals",
       id: "iframeViewer",
@@ -27,8 +27,8 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-      setContent(content);
-      viewerMode(isViewer);
+      setContent(content, isViewer);
+      //viewerMode(isViewer);
     }, function(error) {
       TSCORE.hideLoadingAnimation();
       TSCORE.showAlertDialog("Loading " + filePath + " failed.");
@@ -38,20 +38,10 @@ define(function(require, exports, module) {
   }
 
   function viewerMode(isViewerMode) {
-    var contentWindow = document.getElementById("iframeViewer").contentWindow;
-    if (typeof contentWindow.viewerMode === "function") {
-      contentWindow.viewerMode(isViewerMode);
-    } else {
-      window.setTimeout(function() {
-        if (typeof contentWindow.viewerMode === "function") {
-          contentWindow.viewerMode(isViewerMode);
-        }
-      } , 500);
-    }
+
   }
 
-  function setContent(content) {
-
+  function setContent(content, isViewer) {
     var UTF8_BOM = "\ufeff";
     if (content.indexOf(UTF8_BOM) === 0) {
       content = content.substring(1, content.length);
@@ -60,20 +50,19 @@ define(function(require, exports, module) {
     var contentWindow = document.getElementById("iframeViewer").contentWindow;
     if (typeof contentWindow.setContent === "function") {
       contentWindow.require = require;
-      var isViewerMode = true;
-      contentWindow.isViewerMode = isViewerMode;
+      contentWindow.isViewer = isViewer;
       contentWindow.extensionDirectory = extensionDirectory;
-      contentWindow.setContent(content , currentFilePath);
+      contentWindow.setContent(content, currentFilePath);
     } else {
       window.setTimeout(function() {
         if (typeof contentWindow.setContent === "function") {
           contentWindow.require = require;
-          var isViewerMode = true;
-          contentWindow.isViewerMode = isViewerMode;
+          //var isViewerMode = true;
+          contentWindow.isViewer = isViewer;
           contentWindow.extensionDirectory = extensionDirectory;
           contentWindow.setContent(content, currentFilePath);
         }
-      } , 500);
+      }, 500);
     }
   }
 
@@ -85,7 +74,7 @@ define(function(require, exports, module) {
   exports.init = init;
   exports.getContent = getContent;
   exports.setContent = setContent;
-  exports.viewerMode = viewerMode;
+  //exports.viewerMode = viewerMode;
 
 });
 

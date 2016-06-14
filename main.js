@@ -88,7 +88,6 @@ $(document).ready(function() {
   }
 
   Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
-    console.log("save");
     saveEditorText();
     return false;
   });
@@ -114,6 +113,7 @@ $(document).ready(function() {
 var editorText;
 var cmEditor;
 function setContent(content, filePath) {
+  //console.debug(isViewer);
 
   var $htmlContent = $("#editorText");
   $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
@@ -154,21 +154,24 @@ function setContent(content, filePath) {
   filetype.txt = "txt";
 
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
-  console.log("File Extension");
-  console.debug(fileExt);
-  console.log("--------------");
 
   //var extensionDirectory = filePath;
   var mode = filetype[fileExt];
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
-    console.debug(modePath);
+    //console.debug(modePath);
   }
 
-  var cursorBlinkRate = isViewerMode ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var lineNumbers = !isViewerMode;
-  console.log(isViewerMode);
+  if (isViewer) {
+    $('#saveEditorText').prop('disabled', true);
+  } else {
+    $('#saveEditorText').prop('disabled', false);
+  }
+
+  var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
+  var lineNumbers = !isViewer;
+  console.log(isViewer);
 
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
@@ -176,14 +179,14 @@ function setContent(content, filePath) {
     mode: mode,
     styleSelectedText: true,
     styleActiveLine: true,
-    lineNumbers: true,
+    lineNumbers: lineNumbers,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
     collapseRange: true,
     matchBrackets: true,
-    //cursorBlinkRate: cursorBlinkRate,
-    //readOnly: isViewerMode ? "nocursor" : isViewerMode,
+    cursorBlinkRate: cursorBlinkRate,
+    readOnly: isViewer ? "nocursor" : isViewer,
     autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
@@ -194,15 +197,8 @@ function setContent(content, filePath) {
     cmEditor.setOption("mode", mode);
     CodeMirror.autoLoadMode(cmEditor, mode);
   } else {
-    console.log("Invalid mode !");
+    throw new TypeError("Invalid mode !");
   }
-  console.debug(cmEditor);
-
-  //cmEditor.on("change", function() {
-  //  if (contentLoaded) {
-  //    //TSCORE.FileOpener.setFileChanged(true);
-  //  }
-  //});
 
   cmEditor.setSize("100%", "100%");
 
@@ -213,10 +209,4 @@ function setContent(content, filePath) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
-}
-
-function viewerMode(isViewerMode) {
-  console.log("isViewerMODE");
-  console.debug(isViewerMode);
-  cmEditor.readOnly = isViewerMode;
 }
