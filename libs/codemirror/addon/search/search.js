@@ -57,13 +57,12 @@
     return cm.getSearchCursor(query, pos, queryCaseInsensitive(query));
   }
 
-  function persistentDialog(cm, text, deflt, onEnter, onKeyDown) {
-    cm.openDialog(text, onEnter, {
+  function persistentDialog(cm, text, deflt, f) {
+    cm.openDialog(text, f, {
       value: deflt,
       selectValueOnOpen: true,
       closeOnEnter: false,
-      onClose: function() { clearSearch(cm); },
-      onKeyDown: onKeyDown
+      onClose: function() { clearSearch(cm); }
     });
   }
 
@@ -79,8 +78,8 @@
 
   function parseString(string) {
     return string.replace(/\\(.)/g, function(_, ch) {
-      if (ch == "n") return "\n";
-      if (ch == "r") return "\r";
+      if (ch == "n") return "\n"
+      if (ch == "r") return "\r"
       return ch
     })
   }
@@ -99,7 +98,7 @@
   }
 
   var queryDialog =
-          'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint"></span>';
+    'Search: <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
 
   function startSearch(cm, state, query) {
     state.queryText = query;
@@ -113,43 +112,28 @@
     }
   }
 
-  function doSearch(cm, rev, persistent, immediate) {
+  function doSearch(cm, rev, persistent) {
     var state = getSearchState(cm);
     if (state.query) return findNext(cm, rev);
     var q = cm.getSelection() || state.lastQuery;
     if (persistent && cm.openDialog) {
-      var hiding = null;
-      var searchNext = function(query, event) {
+      var hiding = null
+      persistentDialog(cm, queryDialog, q, function(query, event) {
         CodeMirror.e_stop(event);
         if (!query) return;
         if (query != state.queryText) {
           startSearch(cm, state, query);
           state.posFrom = state.posTo = cm.getCursor();
         }
-        if (hiding) hiding.style.opacity = 1;
+        if (hiding) hiding.style.opacity = 1
         findNext(cm, event.shiftKey, function(_, to) {
-          var dialog;
+          var dialog
           if (to.line < 3 && document.querySelector &&
-                  (dialog = cm.display.wrapper.querySelector(".CodeMirror-dialog")) &&
-                  dialog.getBoundingClientRect().bottom - 4 > cm.cursorCoords(to, "window").top)
+              (dialog = cm.display.wrapper.querySelector(".CodeMirror-dialog")) &&
+              dialog.getBoundingClientRect().bottom - 4 > cm.cursorCoords(to, "window").top)
             (hiding = dialog).style.opacity = .4
         })
-      };
-      persistentDialog(cm, queryDialog, q, searchNext, function(event, query) {
-        var cmd = CodeMirror.keyMap[cm.getOption("keyMap")][CodeMirror.keyName(event)];
-        if (cmd == "findNext" || cmd == "findPrev") {
-          CodeMirror.e_stop(event);
-          startSearch(cm, getSearchState(cm), query);
-          cm.execCommand(cmd);
-        } else if (cmd == "find" || cmd == "findPersistent") {
-          CodeMirror.e_stop(event);
-          searchNext(query, event);
-        }
       });
-      if (immediate) {
-        startSearch(cm, state, q);
-        findNext(cm, rev);
-      }
     } else {
       dialog(cm, queryDialog, "Search for:", q, function(query) {
         if (query && !state.query) cm.operation(function() {
@@ -184,7 +168,7 @@
   });}
 
   var replaceQueryDialog =
-          ' <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
+    ' <input type="text" style="width: 10em" class="CodeMirror-search-field"/> <span style="color: #888" class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>';
   var replacementQueryDialog = 'With: <input type="text" style="width: 10em" class="CodeMirror-search-field"/>';
   var doReplaceConfirm = "Replace? <button>Yes</button> <button>No</button> <button>All</button> <button>Stop</button>";
 
@@ -202,12 +186,12 @@
   function replace(cm, all) {
     if (cm.getOption("readOnly")) return;
     var query = cm.getSelection() || getSearchState(cm).lastQuery;
-    var dialogText = all ? "Replace all:" : "Replace:";
+    var dialogText = all ? "Replace all:" : "Replace:"
     dialog(cm, dialogText + replaceQueryDialog, dialogText, query, function(query) {
       if (!query) return;
       query = parseQuery(query);
       dialog(cm, replacementQueryDialog, "Replace with:", "", function(text) {
-        text = parseString(text);
+        text = parseString(text)
         if (all) {
           replaceAll(cm, query, text)
         } else {
@@ -218,17 +202,17 @@
             if (!(match = cursor.findNext())) {
               cursor = getSearchCursor(cm, query);
               if (!(match = cursor.findNext()) ||
-                      (start && cursor.from().line == start.line && cursor.from().ch == start.ch)) return;
+                  (start && cursor.from().line == start.line && cursor.from().ch == start.ch)) return;
             }
             cm.setSelection(cursor.from(), cursor.to());
             cm.scrollIntoView({from: cursor.from(), to: cursor.to()});
             confirmDialog(cm, doReplaceConfirm, "Replace?",
-                    [function() {doReplace(match);}, advance,
-                      function() {replaceAll(cm, query, text)}]);
+                          [function() {doReplace(match);}, advance,
+                           function() {replaceAll(cm, query, text)}]);
           };
           var doReplace = function(match) {
             cursor.replace(typeof query == "string" ? text :
-                    text.replace(/\$(\d)/g, function(_, i) {return match[i];}));
+                           text.replace(/\$(\d)/g, function(_, i) {return match[i];}));
             advance();
           };
           advance();
@@ -239,8 +223,6 @@
 
   CodeMirror.commands.find = function(cm) {clearSearch(cm); doSearch(cm);};
   CodeMirror.commands.findPersistent = function(cm) {clearSearch(cm); doSearch(cm, false, true);};
-  CodeMirror.commands.findPersistentNext = function(cm) {doSearch(cm, false, true, true);};
-  CodeMirror.commands.findPersistentPrev = function(cm) {doSearch(cm, true, true, true);};
   CodeMirror.commands.findNext = doSearch;
   CodeMirror.commands.findPrev = function(cm) {doSearch(cm, true);};
   CodeMirror.commands.clearSearch = clearSearch;

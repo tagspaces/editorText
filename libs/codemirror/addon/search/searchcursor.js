@@ -54,8 +54,8 @@
         }
         if (match && matchLen)
           return {from: Pos(pos.line, start),
-            to: Pos(pos.line, start + matchLen),
-            match: match};
+                  to: Pos(pos.line, start + matchLen),
+                  match: match};
       };
     } else { // String query
       var origQuery = query;
@@ -77,13 +77,13 @@
                 match = adjustPos(orig, line, match);
                 return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
               }
-            } else {
-              var orig = doc.getLine(pos.line).slice(pos.ch), line = fold(orig);
-              var match = line.indexOf(query);
-              if (match > -1) {
-                match = adjustPos(orig, line, match) + pos.ch;
-                return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
-              }
+             } else {
+               var orig = doc.getLine(pos.line).slice(pos.ch), line = fold(orig);
+               var match = line.indexOf(query);
+               if (match > -1) {
+                 match = adjustPos(orig, line, match) + pos.ch;
+                 return {from: Pos(pos.line, match), to: Pos(pos.line, match + origQuery.length)};
+               }
             }
           };
         }
@@ -153,7 +153,7 @@
       var lines = CodeMirror.splitLines(newText);
       this.doc.replaceRange(lines, this.pos.from, this.pos.to, origin);
       this.pos.to = Pos(this.pos.from.line + lines.length - 1,
-              lines[lines.length - 1].length + (lines.length == 1 ? this.pos.from.ch : 0));
+                        lines[lines.length - 1].length + (lines.length == 1 ? this.pos.from.ch : 0));
     }
   };
 
