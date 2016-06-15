@@ -185,12 +185,12 @@ function setContent(content, filePath) {
     throw new TypeError("Invalid mode !");
   }
 
-    CodeMirror.on(cmEditor, "inputRead", function() {
-      if (!isViewer) {
-        var msg = {command: "contentChangedInEditor", filepath: filePath};
-        window.parent.postMessage(JSON.stringify(msg), "*");
-      }
-    });
+  CodeMirror.on(cmEditor, "inputRead", function() {
+    if (!isViewer) {
+      var msg = {command: "contentChangedInEditor", filepath: filePath};
+      window.parent.postMessage(JSON.stringify(msg), "*");
+    }
+  });
 
   cmEditor.setSize("100%", "100%");
 
