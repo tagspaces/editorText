@@ -16,7 +16,7 @@ $(document).ready(function() {
   }
 
   var locale = getParameterByName("locale");
-  var $htmlContent;
+  var $htmlContent = $("#editorText");
   var extSettings;
   loadExtSettings();
 
@@ -87,9 +87,15 @@ $(document).ready(function() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
   }
 
-  Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
-    saveEditorText();
-    return false;
+  $($htmlContent).bind('keydown', function(event) {
+    if (event.ctrlKey || event.metaKey) {
+      switch (String.fromCharCode(event.which).toLowerCase()) {
+        case 's':
+          event.preventDefault();
+          saveEditorText();
+          break;
+      }
+    }
   });
 
   var filePath;
