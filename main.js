@@ -92,28 +92,19 @@ $(document).ready(function() {
     return false;
   });
 
+  var filePath;
+
   function saveEditorText() {
     var msg = {command: "saveDocument", filepath: filePath};
     window.parent.postMessage(JSON.stringify(msg), "*");
   }
 
-  var filePath;
-
-  //function contentChanged() {
-  //  console.log('Content changed');
-  //  var msg = {command: "contentChangedInEditor", filepath: filePath};
-  //  window.parent.postMessage(JSON.stringify(msg), "*");
-  //}
-  //
-  //document.querySelector('saveDocument').addEventListener('saveDocument', function(event) {
-  //  contentChanged()
-  //});
 });
 
 var editorText;
 var cmEditor;
+
 function setContent(content, filePath) {
-  //console.debug(isViewer);
 
   var $htmlContent = $("#editorText");
   $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
@@ -163,12 +154,6 @@ function setContent(content, filePath) {
     //console.debug(modePath);
   }
 
-  if (isViewer) {
-    $('#saveEditorText').prop('disabled', true);
-  } else {
-    $('#saveEditorText').prop('disabled', false);
-  }
-
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var lineNumbers = !isViewer;
   console.log(isViewer);
@@ -199,6 +184,13 @@ function setContent(content, filePath) {
   } else {
     throw new TypeError("Invalid mode !");
   }
+
+    CodeMirror.on(cmEditor, "inputRead", function() {
+      if (!isViewer) {
+        var msg = {command: "contentChangedInEditor", filepath: filePath};
+        window.parent.postMessage(JSON.stringify(msg), "*");
+      }
+    });
 
   cmEditor.setSize("100%", "100%");
 
