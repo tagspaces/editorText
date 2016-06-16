@@ -99,7 +99,6 @@ $(document).ready(function() {
   });
 
   var filePath;
-
   function saveEditorText() {
     var msg = {command: "saveDocument", filepath: filePath};
     window.parent.postMessage(JSON.stringify(msg), "*");
@@ -113,7 +112,7 @@ var cmEditor;
 function setContent(content, filePath) {
 
   var $htmlContent = $("#editorText");
-  $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 0;">');
+  $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 9999;">');
 
   var filetype = [];
   filetype.h = "clike";
@@ -161,23 +160,24 @@ function setContent(content, filePath) {
   }
 
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var lineNumbers = !isViewer;
+  var isViewerMode = !isViewer;
   console.log(isViewer);
 
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
-    fixedGutter: false,
     mode: mode,
-    styleSelectedText: true,
-    styleActiveLine: true,
-    lineNumbers: lineNumbers,
+    lineNumbers: isViewerMode,
+    cursorBlinkRate: cursorBlinkRate,
+    readOnly: isViewer ? "nocursor" : isViewer,
+    foldGutter: isViewerMode,
+    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    styleActiveLine: isViewerMode,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
-    collapseRange: true,
-    matchBrackets: true,
-    cursorBlinkRate: cursorBlinkRate,
-    readOnly: isViewer ? "nocursor" : isViewer,
+    //collapseRange: isViewerMode,
+    matchBrackets: isViewerMode,
+    styleSelectedText: isViewerMode,
     autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
