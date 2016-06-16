@@ -48,3 +48,6 @@ pre {
 .modal-backdrop{
   display:none; 
 }
+
+/* Help users use markselection to safely style text background */
+span.CodeMirror-selectedtext { background: #ffe6cc; !important; }

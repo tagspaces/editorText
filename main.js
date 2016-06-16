@@ -198,6 +198,10 @@ function setContent(content, filePath) {
     }
   });
 
+  cmEditor.on("mousedown", function() {
+    console.log("");
+  });
+
   cmEditor.setSize("100%", "100%");
 
   var UTF8_BOM = "\ufeff";
