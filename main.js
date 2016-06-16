@@ -99,6 +99,7 @@ $(document).ready(function() {
   });
 
   var filePath;
+
   function saveEditorText() {
     var msg = {command: "saveDocument", filepath: filePath};
     window.parent.postMessage(JSON.stringify(msg), "*");
@@ -151,17 +152,14 @@ function setContent(content, filePath) {
 
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
-  //var extensionDirectory = filePath;
   var mode = filetype[fileExt];
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
-    //console.debug(modePath);
   }
 
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
-  console.log(isViewer);
 
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
@@ -196,10 +194,6 @@ function setContent(content, filePath) {
       var msg = {command: "contentChangedInEditor", filepath: filePath};
       window.parent.postMessage(JSON.stringify(msg), "*");
     }
-  });
-
-  cmEditor.on("mousedown", function() {
-    console.log("");
   });
 
   cmEditor.setSize("100%", "100%");
