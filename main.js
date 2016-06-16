@@ -177,7 +177,7 @@ function setContent(content, filePath) {
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
     //collapseRange: isViewerMode,
     matchBrackets: isViewerMode,
-    styleSelectedText: isViewerMode,
+    styleSelectedText: true,
     autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
