@@ -1,26 +1,7 @@
+@import '../../libs/extCommon/common.css';
+
 .CodeMirror {
   font-size: 140%;
-}
-#aboutExtensionModalEditorText img {
-  max-width: 100%;
-}
-
-#aboutExtensionModalEditorText h1 {
-  font-size: 22px;
-}
-
-#aboutExtensionModalEditorText h2 {
-  font-size: 20px;
-}
-
-#aboutExtensionModalEditorText h3 {
-  font-size: 18px;
-}
-
-#aboutExtensionModalEditorText .modal-body {
-  max-height: 500px;
-  overflow: auto;
-  
 }
 
 body {
