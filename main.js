@@ -109,6 +109,7 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
+  var extensionDirectory;
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
@@ -122,7 +123,8 @@ function setContent(content, filePath) {
     mode: mode,
     lineNumbers: isViewerMode,
     cursorBlinkRate: cursorBlinkRate,
-    readOnly: isViewer ? "nocursor" : isViewer,
+    //readOnly: isViewer ? "nocursor" : isViewer,
+    readOnly: isViewer ? true : false,
     foldGutter: isViewerMode,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     styleActiveLine: isViewerMode,
@@ -149,6 +151,14 @@ function setContent(content, filePath) {
     if (!isViewer) {
       var msg = {command: "contentChangedInEditor", filepath: filePath};
       window.parent.postMessage(JSON.stringify(msg), "*");
+    }
+  });
+
+  CodeMirror.on(cmEditor, "changes", function() {
+    if (cmEditor.readOnly === true) {
+     $('.CodeMirror-cursor').hide();
+    } else {
+      $('.CodeMirror-cursor').show();
     }
   });
 
