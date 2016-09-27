@@ -1,6 +1,6 @@
 /* Copyright (c) 2013-2016 The TagSpaces Authors.
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
-/* globals marked, Mousetrap */
+/* globals marked, Mousetrap, CodeMirror */
 "use strict";
 
 var isCordova;
@@ -114,7 +114,8 @@ function setContent(content, filePath) {
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
   }
-
+  var isViewer;
+  console.log(isViewer);
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
 
@@ -156,7 +157,7 @@ function setContent(content, filePath) {
 
   CodeMirror.on(cmEditor, "changes", function() {
     if (cmEditor.readOnly === true) {
-     $('.CodeMirror-cursor').hide();
+      $('.CodeMirror-cursor').hide();
     } else {
       $('.CodeMirror-cursor').show();
     }
