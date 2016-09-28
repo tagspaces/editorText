@@ -7,7 +7,7 @@ var isCordova;
 var isWin;
 var isWeb;
 
-var globContent;
+var mdContent;
 
 $(document).ready(function() {
   function getParameterByName(name) {
@@ -43,21 +43,14 @@ $(document).ready(function() {
 
   // Init Markdown Preview functionality
   $('#markdownPreviewModal').on('show.bs.modal', function() {
-    $.ajax({
-      url: '',
-      type: 'GET'
-    }).done(function(mdData) {
-      //console.log("DATA: " + mdData);
       if (marked) {
         var modalBody = $("#markdownPreviewModal .modal-body");
-        modalBody.html(marked(mdData, {sanitize: true}));
-        handleLinks(modalBody);
+        modalBody.append(mdContent);
+        //modalBody.html(marked(mdData, {sanitize: true}));
+        //handleLinks(modalBody);
       } else {
         console.log("markdown to html transformer not found");
       }
-    }).fail(function(data) {
-      console.warn("Loading file failed " + data);
-    });
   });
 
   $("#markdownPreview").on("click", function(e) {
@@ -94,6 +87,11 @@ $(document).ready(function() {
 
   function saveEditorText() {
     var msg = {command: "saveDocument", filepath: filePath};
+    window.parent.postMessage(JSON.stringify(msg), "*");
+  }
+
+  function mdPreviewEditorText() {
+    var msg = {command: "mdPreview", filepath: filePath};
     window.parent.postMessage(JSON.stringify(msg), "*");
   }
 
@@ -204,7 +202,7 @@ function setContent(content, filePath) {
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
   }
-
+  mdContent = content;
   console.debug(content);
   cmEditor.setValue(content);
   cmEditor.clearHistory();
