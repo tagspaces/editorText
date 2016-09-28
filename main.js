@@ -88,18 +88,12 @@ $(document).ready(function() {
     window.parent.postMessage(JSON.stringify(msg), "*");
   }
 
-  function mdPreviewEditorText() {
-    var msg = {command: "mdPreview", filepath: filePath};
-    window.parent.postMessage(JSON.stringify(msg), "*");
-  }
-
 });
 
 var editorText;
 var cmEditor;
 
 function setContent(content, filePath) {
-  mdContent = content;
 
   var $htmlContent = $("#editorText");
   $htmlContent.append('<div id="code" style="width: 100%; height: 100%; z-index: 9999;">');
@@ -201,7 +195,9 @@ function setContent(content, filePath) {
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
   }
+
   cmEditor.setValue(content);
+  mdContent = cmEditor.getValue();
   cmEditor.clearHistory();
   cmEditor.refresh();
 }
