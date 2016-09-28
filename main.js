@@ -43,7 +43,7 @@ $(document).ready(function() {
   $('#markdownPreviewModal').on('show.bs.modal', function() {
     if (marked) {
       var modalBody = $("#markdownPreviewModal .modal-body");
-      modalBody.html(marked(cmEditor.getValue()));
+      modalBody.html(marked(cmEditor.getValue(), {sanitize: true}));
     } else {
       console.log("markdown to html transformer not found");
     }
