@@ -53,6 +53,10 @@ $(document).ready(function() {
     $("#markdownPreviewModal").modal({show: true});
   });
 
+  $("#mdHelpButton").on("click", function(e) {
+    $("#markdownHelpModal").modal({show: true});
+  });
+
   function handleLinks($element) {
     $element.find("a[href]").each(function() {
       var currentSrc = $(this).attr("href");
@@ -144,8 +148,10 @@ function setContent(content, filePath) {
   if (mode !== filetype.markdown || mode !== filetype.md ||
     mode !== filetype.mdown || mode !== filetype.mdwn) {
     $("#markdownPreview").hide();
+    $("#mdHelpButton").hide();
   } else {
     $("#markdownPreview").show();
+    $("#mdHelpButton").show();
   }
 
   var isViewer;

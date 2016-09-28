@@ -6,5 +6,7 @@
   "aboutTitle": "About editorText extension",
   "markdownPreview": "Markdown Preview",
   "markdownTitle": "Previewing Markdown",
+  "MDHelp": "MarkDown Help",
+  "MDHelpTitle": "Short MarkDown Tutorial",
   "-": "-"
 }
