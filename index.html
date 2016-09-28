@@ -61,6 +61,9 @@
     <li><a id="printButton">
       <i class="fa fa-print fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:print"></span>
     </a></li>
+    <li><a id="markdownPreview">
+      <i class="fa fa-info fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:markdownPreview"></span>
+    </a></li>
     <li><a id="aboutButton">
       <i class="fa fa-comment fa-lg fa-fw"></i>&nbsp;<span data-i18n="ns.editorText:about"></span>
     </a></li>
@@ -72,6 +75,22 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
         <h4 class="modal-title" data-i18n="ns.editorText:aboutTitle"></h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true"><i class="fa fa-check fa-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fullScreenMobile" id="markdownPreviewModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+        <h4 class="modal-title" data-i18n="ns.editorText:markdownTitle"></h4>
       </div>
       <div class="modal-body"></div>
       <div class="modal-footer">

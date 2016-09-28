@@ -7,6 +7,8 @@ var isCordova;
 var isWin;
 var isWeb;
 
+var globContent;
+
 $(document).ready(function() {
   function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -38,6 +40,40 @@ $(document).ready(function() {
   }, function() {
     $('[data-i18n]').i18n();
   });
+
+  // Init Markdown Preview functionality
+  $('#markdownPreviewModal').on('show.bs.modal', function() {
+    $.ajax({
+      url: '',
+      type: 'GET'
+    }).done(function(mdData) {
+      //console.log("DATA: " + mdData);
+      if (marked) {
+        var modalBody = $("#markdownPreviewModal .modal-body");
+        modalBody.html(marked(mdData, {sanitize: true}));
+        handleLinks(modalBody);
+      } else {
+        console.log("markdown to html transformer not found");
+      }
+    }).fail(function(data) {
+      console.warn("Loading file failed " + data);
+    });
+  });
+
+  $("#markdownPreview").on("click", function(e) {
+    $("#markdownPreviewModal").modal({show: true});
+  });
+
+  function handleLinks($element) {
+    $element.find("a[href]").each(function() {
+      var currentSrc = $(this).attr("href");
+      $(this).bind('click', function(e) {
+        e.preventDefault();
+        var msg = {command: "openLinkExternally", link: currentSrc};
+        window.parent.postMessage(JSON.stringify(msg), "*");
+      });
+    });
+  }
 
   function loadExtSettings() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
@@ -115,7 +151,6 @@ function setContent(content, filePath) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
   }
   var isViewer;
-  console.log(isViewer);
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
 
@@ -169,6 +204,8 @@ function setContent(content, filePath) {
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
   }
+
+  console.debug(content);
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
