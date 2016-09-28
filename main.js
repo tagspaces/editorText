@@ -1,6 +1,6 @@
 /* Copyright (c) 2013-2016 The TagSpaces Authors.
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
-/* globals marked, Mousetrap */
+/* globals marked, Mousetrap, CodeMirror */
 "use strict";
 
 var isCordova;
@@ -11,7 +11,7 @@ $(document).ready(function() {
   function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
+      results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
@@ -38,6 +38,35 @@ $(document).ready(function() {
   }, function() {
     $('[data-i18n]').i18n();
   });
+
+  // Init Markdown Preview functionality
+  $('#markdownPreviewModal').on('show.bs.modal', function() {
+    if (marked) {
+      var modalBody = $("#markdownPreviewModal .modal-body");
+      modalBody.html(marked(cmEditor.getValue(), {sanitize: true}));
+    } else {
+      console.log("markdown to html transformer not found");
+    }
+  });
+
+  $("#markdownPreview").on("click", function(e) {
+    $("#markdownPreviewModal").modal({show: true});
+  });
+
+  $("#mdHelpButton").on("click", function(e) {
+    $("#markdownHelpModal").modal({show: true});
+  });
+
+  function handleLinks($element) {
+    $element.find("a[href]").each(function() {
+      var currentSrc = $(this).attr("href");
+      $(this).bind('click', function(e) {
+        e.preventDefault();
+        var msg = {command: "openLinkExternally", link: currentSrc};
+        window.parent.postMessage(JSON.stringify(msg), "*");
+      });
+    });
+  }
 
   function loadExtSettings() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
@@ -109,12 +138,23 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
+  console.log(mode);
   var extensionDirectory;
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
   }
 
+  if (mode !== filetype.markdown || mode !== filetype.md ||
+    mode !== filetype.mdown || mode !== filetype.mdwn) {
+    $("#markdownPreview").hide();
+    $("#mdHelpButton").hide();
+  } else {
+    $("#markdownPreview").show();
+    $("#mdHelpButton").show();
+  }
+
+  var isViewer;
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
 
@@ -156,7 +196,7 @@ function setContent(content, filePath) {
 
   CodeMirror.on(cmEditor, "changes", function() {
     if (cmEditor.readOnly === true) {
-     $('.CodeMirror-cursor').hide();
+      $('.CodeMirror-cursor').hide();
     } else {
       $('.CodeMirror-cursor').show();
     }
@@ -168,6 +208,7 @@ function setContent(content, filePath) {
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
   }
+
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
