@@ -7,13 +7,11 @@ var isCordova;
 var isWin;
 var isWeb;
 
-var mdContent;
-
 $(document).ready(function() {
   function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-            results = regex.exec(location.search);
+      results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
@@ -43,12 +41,12 @@ $(document).ready(function() {
 
   // Init Markdown Preview functionality
   $('#markdownPreviewModal').on('show.bs.modal', function() {
-      if (marked) {
-        var modalBody = $("#markdownPreviewModal .modal-body");
-        modalBody.append(marked(mdContent));
-      } else {
-        console.log("markdown to html transformer not found");
-      }
+    if (marked) {
+      var modalBody = $("#markdownPreviewModal .modal-body");
+      modalBody.html(marked(cmEditor.getValue()));
+    } else {
+      console.log("markdown to html transformer not found");
+    }
   });
 
   $("#markdownPreview").on("click", function(e) {
@@ -136,11 +134,20 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
+  console.log(mode);
   var extensionDirectory;
   var modePath;
   if (mode) {
     modePath = extensionDirectory + "/libs/codemirror/mode/" + mode + "/" + mode;
   }
+
+  if (mode !== filetype.markdown || mode !== filetype.md ||
+    mode !== filetype.mdown || mode !== filetype.mdwn) {
+    $("#markdownPreview").hide();
+  } else {
+    $("#markdownPreview").show();
+  }
+
   var isViewer;
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
@@ -197,7 +204,6 @@ function setContent(content, filePath) {
   }
 
   cmEditor.setValue(content);
-  mdContent = cmEditor.getValue();
   cmEditor.clearHistory();
   cmEditor.refresh();
 }
