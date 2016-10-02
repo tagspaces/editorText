@@ -24,11 +24,6 @@ $(document).ready(function() {
   isWin = parent.isWin;
   isWeb = parent.isWeb;
 
-
-  $('#saveEditorText').on('click', function(e) {
-    saveEditorText();
-  });
-
   // Init internationalization
   $.i18n.init({
     ns: {namespaces: ['ns.editorText']},
@@ -72,7 +67,7 @@ $(document).ready(function() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
   }
 
-  $($htmlContent).bind('keydown', function(event) {
+  /*$($htmlContent).bind('keydown', function(event) {
     if (event.ctrlKey || event.metaKey) {
       switch (String.fromCharCode(event.which).toLowerCase()) {
         case 's':
@@ -81,7 +76,7 @@ $(document).ready(function() {
           break;
       }
     }
-  });
+  });*/
 
   var filePath;
 
