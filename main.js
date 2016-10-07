@@ -34,6 +34,18 @@ $(document).ready(function() {
     $('[data-i18n]').i18n();
   });
 
+  if(marked) {
+    marked.setOptions({
+      renderer: new marked.Renderer(),
+      gfm: true,
+      tables: true,
+      breaks: true,
+      pedantic: false,
+      smartLists: true,
+      smartypants: false
+    });
+  }
+
   // Init Markdown Preview functionality
   $('#markdownPreviewModal').on('show.bs.modal', function() {
     if (marked) {
