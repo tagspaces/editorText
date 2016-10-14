@@ -138,6 +138,7 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
+
   var extensionDirectory;
   var modePath;
   if (mode) {
@@ -153,27 +154,27 @@ function setContent(content, filePath) {
     $("#mdHelpButton").show();
   }
 
-  isViewer;
-  var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var isViewerMode = !isViewer;
+  //isViewer;
+  //var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
+  //var isViewerMode = !isViewer;
 
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
-    lineNumbers: isViewerMode,
-    cursorBlinkRate: cursorBlinkRate,
+    //lineNumbers: isViewerMode,
+    //cursorBlinkRate: cursorBlinkRate,
     //readOnly: isViewer ? "nocursor" : isViewer,
-    readOnly: isViewer ? true : false,
-    foldGutter: isViewerMode,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    styleActiveLine: isViewerMode,
-    lineWrapping: true,
-    tabSize: 2,
-    //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
-    //collapseRange: isViewerMode,
-    matchBrackets: isViewerMode,
-    styleSelectedText: true,
-    autofocus: true
+    //readOnly: true,
+    //foldGutter: isViewerMode,
+    //gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+    //styleActiveLine: isViewerMode,
+    //lineWrapping: true,
+    //tabSize: 2,
+    ////lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
+    ////collapseRange: isViewerMode,
+    //matchBrackets: isViewerMode,
+    //styleSelectedText: true,
+    //autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
@@ -186,12 +187,12 @@ function setContent(content, filePath) {
     throw new TypeError("Invalid mode !");
   }
 
-  CodeMirror.on(cmEditor, "inputRead", function() {
-    if (!isViewer) {
-      var msg = {command: "contentChangedInEditor", filepath: filePath};
-      window.parent.postMessage(JSON.stringify(msg), "*");
-    }
-  });
+  //CodeMirror.on(cmEditor, "inputRead", function() {
+  //  if (!isViewer) {
+  //    var msg = {command: "contentChangedInEditor", filepath: filePath};
+  //    window.parent.postMessage(JSON.stringify(msg), "*");
+  //  }
+  //});
 
   CodeMirror.on(cmEditor, "changes", function() {
     if (cmEditor.readOnly === true) {
@@ -211,4 +212,25 @@ function setContent(content, filePath) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
+}
+
+function viewerMode(isViewerMode) {
+  console.log("Viewer Mode");
+  console.log(isViewerMode);
+
+  //var mode = isViewerMode;
+  var place = document.getElementById("code");
+  var editor = new CodeMirror(place, {
+    readOnly: true
+  });
+  //CodeMirror.on(cmdEditor, "inputRead", function() {
+  //  if (!isViewer) {
+  //    var msg = {command: "contentChangedInEditor", filepath: filePath};
+  //    window.parent.postMessage(JSON.stringify(msg), "*");
+  //  }
+  //});
+
+  //editor.setSize("100%", "100%");
+  //editor.clearHistory();
+  editor.refresh();
 }
