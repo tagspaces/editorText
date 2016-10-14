@@ -95,6 +95,21 @@ $(document).ready(function() {
 var editorText;
 var cmEditor;
 var view;
+
+function viewerMode(isViewerMode) {
+  var cursorBlinkRate = isViewerMode ? -1 : 530;
+  view = isViewerMode;
+
+  //cmEditor.options.lineNumbers = isViewerMode;
+  cmEditor.options.cursorBlinkRate = cursorBlinkRate;
+  cmEditor.options.readOnly = isViewerMode ? true : false;
+  cmEditor.options.foldGutter = isViewerMode;
+  cmEditor.options.styleActiveLine = isViewerMode;
+  cmEditor.options.matchBrackets = isViewerMode;
+  cmEditor.options.showCursorWhenSelecting = isViewerMode;
+  cmEditor.refresh();
+}
+
 function setContent(content, filePath) {
 
   var $htmlContent = $("#editorText");
@@ -153,12 +168,13 @@ function setContent(content, filePath) {
     $("#markdownPreview").show();
     $("#mdHelpButton").show();
   }
-
+  console.log("view");
+  console.log(!view);
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
-    //lineNumbers: true,
-    //foldGutter: true,
+    lineNumbers: true,
+    foldGutter: true,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     lineWrapping: true,
     tabSize: 2,
@@ -202,19 +218,5 @@ function setContent(content, filePath) {
 
   cmEditor.setValue(content);
   cmEditor.clearHistory();
-  cmEditor.refresh();
-}
-
-function viewerMode(isViewerMode) {
-  var cursorBlinkRate = isViewerMode ? -1 : 530;
-  view = isViewerMode;
-
-  //cmEditor.options.lineNumbers = isViewerMode;
-  cmEditor.options.cursorBlinkRate = cursorBlinkRate;
-  cmEditor.options.readOnly = isViewerMode ? true : false;
-  cmEditor.options.foldGutter = isViewerMode;
-  cmEditor.options.styleActiveLine = isViewerMode;
-  cmEditor.options.matchBrackets = isViewerMode;
-  cmEditor.options.showCursorWhenSelecting = isViewerMode;
   cmEditor.refresh();
 }
