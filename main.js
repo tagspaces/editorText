@@ -168,8 +168,7 @@ function setContent(content, filePath) {
     $("#markdownPreview").show();
     $("#mdHelpButton").show();
   }
-  console.log("view");
-  console.log(!view);
+
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
