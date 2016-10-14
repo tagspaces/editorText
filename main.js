@@ -157,8 +157,8 @@ function setContent(content, filePath) {
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
-    lineNumbers: true,
-    foldGutter: true,
+    //lineNumbers: true,
+    //foldGutter: true,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
     lineWrapping: true,
     tabSize: 2,
