@@ -157,14 +157,12 @@ function setContent(content, filePath) {
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
-    //lineNumbers: true,
-    //readOnly: isViewer ? "nocursor" : isViewer,
+    lineNumbers: true,
+    foldGutter: true,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    //styleActiveLine: isViewerMode,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
-    //collapseRange: isViewerMode,
     styleSelectedText: true,
     showCursorWhenSelecting: true,
     autofocus: true
