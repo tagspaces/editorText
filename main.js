@@ -138,7 +138,6 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
-  console.log(mode);
   var extensionDirectory;
   var modePath;
   if (mode) {
@@ -154,7 +153,7 @@ function setContent(content, filePath) {
     $("#mdHelpButton").show();
   }
 
-  var isViewer;
+  isViewer;
   var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
   var isViewerMode = !isViewer;
 
