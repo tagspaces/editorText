@@ -101,6 +101,21 @@ $(document).ready(function() {
 
 var editorText;
 var cmEditor;
+var view;
+
+function viewerMode(isViewerMode) {
+  var cursorBlinkRate = isViewerMode ? -1 : 530;
+  view = isViewerMode;
+
+  //cmEditor.options.lineNumbers = isViewerMode;
+  cmEditor.options.cursorBlinkRate = cursorBlinkRate;
+  cmEditor.options.readOnly = isViewerMode ? true : false;
+  cmEditor.options.foldGutter = isViewerMode;
+  cmEditor.options.styleActiveLine = isViewerMode;
+  cmEditor.options.matchBrackets = isViewerMode;
+  cmEditor.options.showCursorWhenSelecting = isViewerMode;
+  cmEditor.refresh();
+}
 
 function setContent(content, filePath) {
 
@@ -145,7 +160,7 @@ function setContent(content, filePath) {
   var fileExt = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
-  console.log(mode);
+
   var extensionDirectory;
   var modePath;
   if (mode) {
@@ -161,26 +176,17 @@ function setContent(content, filePath) {
     $("#mdHelpButton").show();
   }
 
-  var isViewer;
-  var cursorBlinkRate = isViewer ? -1 : 530; // disabling the blinking cursor in readonly mode
-  var isViewerMode = !isViewer;
-
   var place = document.getElementById("code");
   cmEditor = new CodeMirror(place, {
     mode: mode,
-    lineNumbers: isViewerMode,
-    cursorBlinkRate: cursorBlinkRate,
-    //readOnly: isViewer ? "nocursor" : isViewer,
-    readOnly: isViewer ? true : false,
-    foldGutter: isViewerMode,
+    lineNumbers: true,
+    foldGutter: true,
     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    styleActiveLine: isViewerMode,
     lineWrapping: true,
     tabSize: 2,
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
-    //collapseRange: isViewerMode,
-    matchBrackets: isViewerMode,
     styleSelectedText: true,
+    showCursorWhenSelecting: true,
     autofocus: true
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
@@ -195,7 +201,7 @@ function setContent(content, filePath) {
   }
 
   CodeMirror.on(cmEditor, "inputRead", function() {
-    if (!isViewer) {
+    if (!view) {
       var msg = {command: "contentChangedInEditor", filepath: filePath};
       window.parent.postMessage(JSON.stringify(msg), "*");
     }
