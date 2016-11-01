@@ -34,7 +34,7 @@ $(document).ready(function() {
     $('[data-i18n]').i18n();
   });
 
-  if(marked) {
+  if (marked) {
     marked.setOptions({
       renderer: new marked.Renderer(),
       gfm: true,
@@ -80,15 +80,15 @@ $(document).ready(function() {
   }
 
   /*$($htmlContent).bind('keydown', function(event) {
-    if (event.ctrlKey || event.metaKey) {
-      switch (String.fromCharCode(event.which).toLowerCase()) {
-        case 's':
-          event.preventDefault();
-          saveEditorText();
-          break;
-      }
-    }
-  });*/
+   if (event.ctrlKey || event.metaKey) {
+   switch (String.fromCharCode(event.which).toLowerCase()) {
+   case 's':
+   event.preventDefault();
+   saveEditorText();
+   break;
+   }
+   }
+   });*/
 
   var filePath;
 
