@@ -101,19 +101,23 @@ $(document).ready(function() {
 
 var editorText;
 var cmEditor;
-var view;
+var viewMode = true;
 
 function viewerMode(isViewerMode) {
-  var cursorBlinkRate = isViewerMode ? -1 : 530;
-  view = isViewerMode;
+  viewMode = isViewerMode;
+
+  if(!viewMode) {
+    cmEditor.focus();
+  }
 
   //cmEditor.options.lineNumbers = isViewerMode;
-  cmEditor.options.cursorBlinkRate = cursorBlinkRate;
-  cmEditor.options.readOnly = isViewerMode ? true : false;
+  cmEditor.options.cursorBlinkRate = isViewerMode ? -1 : 530;
+  cmEditor.options.readOnly = isViewerMode;
   cmEditor.options.foldGutter = isViewerMode;
   cmEditor.options.styleActiveLine = isViewerMode;
   cmEditor.options.matchBrackets = isViewerMode;
   cmEditor.options.showCursorWhenSelecting = isViewerMode;
+  cmEditor.options.autofocus = !isViewerMode;
   cmEditor.refresh();
 }
 
@@ -187,7 +191,7 @@ function setContent(content, filePath) {
     //lineSeparator: isWin ? "\n\r" : null, // TODO check under windows if content contains \n\r -> set
     styleSelectedText: true,
     showCursorWhenSelecting: true,
-    autofocus: true
+    autofocus: !viewMode
     //theme: "lesser-dark",
     //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
@@ -201,7 +205,7 @@ function setContent(content, filePath) {
   }
 
   CodeMirror.on(cmEditor, "inputRead", function() {
-    if (!view) {
+    if (!viewMode) {
       var msg = {command: "contentChangedInEditor", filepath: filePath};
       window.parent.postMessage(JSON.stringify(msg), "*");
     }
