@@ -34,7 +34,7 @@ $(document).ready(function() {
     $('[data-i18n]').i18n();
   });
 
-  if(marked) {
+  if (marked) {
     marked.setOptions({
       renderer: new marked.Renderer(),
       gfm: true,
