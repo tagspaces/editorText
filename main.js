@@ -79,17 +79,6 @@ $(document).ready(function() {
     extSettings = JSON.parse(localStorage.getItem("editorTextSettings"));
   }
 
-  /*$($htmlContent).bind('keydown', function(event) {
-   if (event.ctrlKey || event.metaKey) {
-   switch (String.fromCharCode(event.which).toLowerCase()) {
-   case 's':
-   event.preventDefault();
-   saveEditorText();
-   break;
-   }
-   }
-   });*/
-
   var filePath;
 
   function saveEditorText() {
@@ -204,18 +193,13 @@ function setContent(content, filePath) {
     throw new TypeError("Invalid mode !");
   }
 
-  CodeMirror.on(cmEditor, "inputRead", function() {
+  CodeMirror.on(cmEditor, "change", function() {
     if (!viewMode) {
       var msg = {command: "contentChangedInEditor", filepath: filePath};
       window.parent.postMessage(JSON.stringify(msg), "*");
-    }
-  });
-
-  CodeMirror.on(cmEditor, "changes", function() {
-    if (cmEditor.readOnly === true) {
-      $('.CodeMirror-cursor').hide();
-    } else {
       $('.CodeMirror-cursor').show();
+    } else {
+      $('.CodeMirror-cursor').hide();
     }
   });
 
