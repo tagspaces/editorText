@@ -106,7 +106,7 @@ var viewMode = true;
 function viewerMode(isViewerMode) {
   viewMode = isViewerMode;
 
-  if(!viewMode) {
+  if (!viewMode) {
     cmEditor.focus();
   }
 
