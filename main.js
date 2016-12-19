@@ -129,6 +129,7 @@ function setContent(content, filePath) {
   filetype.html = "xml";
   filetype.java = "clike";
   filetype.js = "javascript";
+  filetype.ts = "javascript";
   filetype.jsm = "javascript";
   filetype.json = "javascript";
   filetype.less = "less";
