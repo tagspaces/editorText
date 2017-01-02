@@ -10,7 +10,7 @@ A TagSpaces extension allowing editing of text based documents.
 ![Screenshot of the editorText](https://github.com/tagspaces/documentation/raw/master/media/extensions/editor-text-lead.png)
 
 ### Markdown preview
-This text editor has an extended support for editing markdown files. It offers a preview of the currently edited markdown document and a short markdown syntax documentation.
+This text editor has an extended support for editing markdown files. It offers a preview of the currently edited markdown document and a short markdown syntax documentation. The markdown preview can be started from the menu item `Markdown Preview` of extensions main menu.
 
 ![Markdown preview in editorText](https://github.com/tagspaces/documentation/raw/master/media/extensions/editor-text-md-preview.png)
 
