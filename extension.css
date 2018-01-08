@@ -1,4 +1,4 @@
-@import '../../libs/extCommon/common.css';
+@import '../legacy-ext/common.css';
 
 .CodeMirror {
   font-size: 140%;
@@ -27,7 +27,7 @@ pre {
 */
 
 .modal-backdrop{
-  display:none; 
+  display:none;
 }
 
 /* Help users use markselection to safely style text background */
