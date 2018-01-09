@@ -2,6 +2,7 @@
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
 /* globals marked, Mousetrap, CodeMirror */
 'use strict';
+sendMessageToHost({command: 'loadDefaultTextContent'});
 
 var isCordova;
 var isWin;
@@ -91,6 +92,7 @@ var cmEditor;
 var viewMode = true;
 
 function viewerMode(isViewerMode) {
+  console.log('viewerMode', isViewerMode);
   viewMode = isViewerMode;
 
   if (!viewMode) {
@@ -108,8 +110,9 @@ function viewerMode(isViewerMode) {
   cmEditor.refresh();
 }
 
-function setContent(content, filePath) {
-
+function setContent(content, filePath, isViewMode) {
+  console.log('setContent EDITOR VIEWER: ', content, filePath, isViewMode);
+  viewerMode(isViewMode);
   var $editorText = $('#editorText');
   $editorText.append("<div id='code' style='width: 100%; height: 100%; z-index: 9999;'>");
 
@@ -194,8 +197,7 @@ function setContent(content, filePath) {
 
   CodeMirror.on(cmEditor, 'change', function() {
     if (!viewMode) {
-      var msg = {command: 'contentChangedInEditor', filepath: filePath};
-      window.parent.postMessage(JSON.stringify(msg), '*');
+      sendMessageToHost({command: 'contentChangedInEditor' , filepath: filePath});
       $('.CodeMirror-cursor').show();
     } else {
       $('.CodeMirror-cursor').hide();
