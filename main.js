@@ -92,9 +92,7 @@ var cmEditor;
 var viewMode = true;
 
 function viewerMode(isViewerMode) {
-  console.log('viewerMode', isViewerMode);
   viewMode = isViewerMode;
-
   if (!viewMode) {
     cmEditor.focus();
   }
@@ -111,8 +109,6 @@ function viewerMode(isViewerMode) {
 }
 
 function setContent(content, filePath, isViewMode) {
-  console.log('setContent EDITOR VIEWER: ', content, filePath, isViewMode);
-  viewerMode(isViewMode);
   var $editorText = $('#editorText');
   $editorText.append("<div id='code' style='width: 100%; height: 100%; z-index: 9999;'>");
 
@@ -155,7 +151,6 @@ function setContent(content, filePath, isViewMode) {
   var fileExt = filePath.substring(filePath.lastIndexOf('.') + 1, filePath.length).toLowerCase();
 
   var mode = filetype[fileExt];
-
   var extensionDirectory;
   var modePath;
   if (mode) {
@@ -194,6 +189,8 @@ function setContent(content, filePath, isViewMode) {
   } else {
     throw new TypeError('Invalid mode !');
   }
+
+  viewerMode(isViewMode);
 
   CodeMirror.on(cmEditor, 'change', function() {
     if (!viewMode) {
