@@ -17,23 +17,14 @@ $(document).ready(function() {
   }
 
   var locale = getParameterByName('locale');
+  initI18N(locale, 'ns.editorText.json');
+
   var extSettings;
   loadExtSettings();
 
   isCordova = parent.isCordova;
   isWin = parent.isWin;
   // isWeb = parent.isWeb;
-
-  // Init internationalization
-  i18next.init({
-    ns: {namespaces: ['ns.editorText']} ,
-    debug: true ,
-    lng: locale ,
-    fallbackLng: 'en_US'
-  } , function() {
-    jqueryI18next.init(i18next, $);
-    $('[data-i18n]').localize();
-  });
 
   if (marked) {
     marked.setOptions({
