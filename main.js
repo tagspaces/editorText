@@ -1,23 +1,57 @@
 /* Copyright (c) 2013-present The TagSpaces Authors.
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
-/* globals marked, Mousetrap, CodeMirror */
+
+/* globals marked, CodeMirror, $, getParameterByName, sendMessageToHost, initI18N */
+
 'use strict';
-sendMessageToHost({command: 'loadDefaultTextContent'});
 
-var isCordova;
-var isWin;
-var isWeb;
+sendMessageToHost({ command: 'loadDefaultTextContent' });
 
-$(document).ready(function() {
-  var locale = getParameterByName('locale');
+let cmEditor;
+let viewMode = true;
+const locale = getParameterByName('locale');
+const filePath = getParameterByName('file');
+const filetype = [];
+filetype.h = 'clike';
+filetype.c = 'clike';
+filetype.clj = 'clojure';
+filetype.coffee = 'coffeescript';
+filetype.cpp = 'clike';
+filetype.cs = 'clike';
+filetype.css = 'css';
+filetype.groovy = 'groovy';
+filetype.haxe = 'haxe';
+filetype.htm = 'xml';
+filetype.html = 'xml';
+filetype.java = 'clike';
+filetype.js = 'javascript';
+filetype.ts = 'javascript';
+filetype.jsm = 'javascript';
+filetype.json = 'javascript';
+filetype.less = 'less';
+filetype.lua = 'lua';
+filetype.markdown = 'markdown';
+filetype.md = 'markdown';
+filetype.mdown = 'markdown';
+filetype.mdwn = 'markdown';
+filetype.mkd = 'markdown';
+filetype.ml = 'ocaml';
+filetype.mli = 'ocaml';
+filetype.pl = 'perl';
+filetype.php = 'php';
+filetype.py = 'python';
+filetype.rb = 'ruby';
+filetype.sh = 'shell';
+filetype.sql = 'sql';
+filetype.svg = 'xml';
+filetype.xml = 'xml';
+filetype.txt = 'txt';
+
+$(document).ready(() => {
   initI18N(locale, 'ns.editorText.json');
 
-  var extSettings;
+  let extSettings;
   loadExtSettings();
-
-  isCordova = parent.isCordova;
-  isWin = parent.isWin;
-  // isWeb = parent.isWeb;
 
   if (marked) {
     marked.setOptions({
@@ -32,29 +66,29 @@ $(document).ready(function() {
   }
 
   // Init Markdown Preview functionality
-  $('#markdownPreviewModal').on('show.bs.modal', function() {
+  $('#markdownPreviewModal').on('show.bs.modal', () => {
     if (marked) {
-      var modalBody = $('#markdownPreviewModal .modal-body');
-      modalBody.html(marked(cmEditor.getValue(), {sanitize: true}));
+      const modalBody = $('#markdownPreviewModal .modal-body');
+      modalBody.html(marked(cmEditor.getValue(), { sanitize: true }));
     } else {
       console.log('markdown to html transformer not found');
     }
   });
 
-  $('#markdownPreview').on('click', function(e) {
-    $('#markdownPreviewModal').modal({show: true});
+  $('#markdownPreview').on('click', (e) => {
+    $('#markdownPreviewModal').modal({ show: true });
   });
 
-  $('#mdHelpButton').on('click', function(e) {
-    $('#markdownHelpModal').modal({show: true});
+  $('#mdHelpButton').on('click', (e) => {
+    $('#markdownHelpModal').modal({ show: true });
   });
 
   function handleLinks($element) {
-    $element.find('a[href]').each(function() {
+    $element.find('a[href]').each(() => {
       var currentSrc = $(this).attr('href');
       $(this).bind('click', function(e) {
         e.preventDefault();
-        sendMessageToHost({command: 'openLinkExternally', link: currentSrc});
+        sendMessageToHost({ command: 'openLinkExternally', link: currentSrc });
       });
     });
   }
@@ -63,17 +97,10 @@ $(document).ready(function() {
     extSettings = JSON.parse(localStorage.getItem('editorTextSettings'));
   }
 
-  var filePath;
-
   function saveEditorText() {
-    sendMessageToHost({command: 'saveDocument', filepath: filePath});
+    sendMessageToHost({ command: 'saveDocument', filepath: filePath });
   }
-
 });
-
-var editorText;
-var cmEditor;
-var viewMode = true;
 
 function viewerMode(isViewerMode) {
   viewMode = isViewerMode;
@@ -81,7 +108,7 @@ function viewerMode(isViewerMode) {
     cmEditor.focus();
   }
 
-  //cmEditor.options.lineNumbers = isViewerMode;
+  // cmEditor.options.lineNumbers = isViewerMode;
   cmEditor.options.cursorBlinkRate = isViewerMode ? -1 : 530;
   cmEditor.options.readOnly = isViewerMode;
   cmEditor.options.foldGutter = isViewerMode;
@@ -92,57 +119,27 @@ function viewerMode(isViewerMode) {
   cmEditor.refresh();
 }
 
-function setContent(content, filePath, isViewMode) {
-  var $editorText = $('#editorText');
-  $editorText.append("<div id='code' style='width: 100%; height: 100%; z-index: 9999;'>");
+function getContent() {
+  return cmEditor.getValue();
+}
 
-  var filetype = [];
-  filetype.h = 'clike';
-  filetype.c = 'clike';
-  filetype.clj = 'clojure';
-  filetype.coffee = 'coffeescript';
-  filetype.cpp = 'clike';
-  filetype.cs = 'clike';
-  filetype.css = 'css';
-  filetype.groovy = 'groovy';
-  filetype.haxe = 'haxe';
-  filetype.htm = 'xml';
-  filetype.html = 'xml';
-  filetype.java = 'clike';
-  filetype.js = 'javascript';
-  filetype.ts = 'javascript';
-  filetype.jsm = 'javascript';
-  filetype.json = 'javascript';
-  filetype.less = 'less';
-  filetype.lua = 'lua';
-  filetype.markdown = 'markdown';
-  filetype.md = 'markdown';
-  filetype.mdown = 'markdown';
-  filetype.mdwn = 'markdown';
-  filetype.mkd = 'markdown';
-  filetype.ml = 'ocaml';
-  filetype.mli = 'ocaml';
-  filetype.pl = 'perl';
-  filetype.php = 'php';
-  filetype.py = 'python';
-  filetype.rb = 'ruby';
-  filetype.sh = 'shell';
-  filetype.sql = 'sql';
-  filetype.svg = 'xml';
-  filetype.xml = 'xml';
-  filetype.txt = 'txt';
+function setContent(content, fileDirectory, isViewMode) {
+  const $editorText = $('#editorText');
+  $editorText.append(
+    "<div id='code' style='width: 100%; height: 100%; z-index: 9999;'>"
+  );
 
-  var fileExt = filePath.substring(filePath.lastIndexOf('.') + 1, filePath.length).toLowerCase();
+  const fileExt = filePath
+    .substring(filePath.lastIndexOf('.') + 1, filePath.length)
+    .toLowerCase();
+  const mode = filetype[fileExt];
 
-  var mode = filetype[fileExt];
-  var extensionDirectory;
-  var modePath;
-  if (mode) {
-    modePath = extensionDirectory + '/libs/codemirror/mode/' + mode + '/' + mode;
-  }
-
-  if (mode !== filetype.markdown || mode !== filetype.md ||
-    mode !== filetype.mdown || mode !== filetype.mdwn) {
+  if (
+    mode !== filetype.markdown ||
+    mode !== filetype.md ||
+    mode !== filetype.mdown ||
+    mode !== filetype.mdwn
+  ) {
     $('#markdownPreview').hide();
     $('#mdHelpButton').hide();
   } else {
@@ -150,20 +147,20 @@ function setContent(content, filePath, isViewMode) {
     $('#mdHelpButton').show();
   }
 
-  var place = document.getElementById('code');
+  const place = document.getElementById('code');
   cmEditor = new CodeMirror(place, {
-    mode: mode,
+    mode,
     lineNumbers: true,
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
     lineWrapping: true,
     tabSize: 2,
-    //lineSeparator: isWin ? '\n\r' : null, // TODO check under windows if content contains \n\r -> set
+    // lineSeparator: isWin ? '\n\r' : null, // TODO check under windows if content contains \n\r -> set
     styleSelectedText: true,
     showCursorWhenSelecting: true,
     autofocus: !viewMode
-    //theme: 'lesser-dark',
-    //extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
+    // theme: 'lesser-dark',
+    // extraKeys: keys // workarrounded with bindGlobal plugin for mousetrap
   });
 
   CodeMirror.modeURL = 'libs/codemirror/mode/%N/%N.js';
@@ -176,9 +173,12 @@ function setContent(content, filePath, isViewMode) {
 
   viewerMode(isViewMode);
 
-  CodeMirror.on(cmEditor, 'change', function() {
+  CodeMirror.on(cmEditor, 'change', () => {
     if (!viewMode) {
-      sendMessageToHost({command: 'contentChangedInEditor' , filepath: filePath});
+      sendMessageToHost({
+        command: 'contentChangedInEditor',
+        filepath: filePath
+      });
       $('.CodeMirror-cursor').show();
     } else {
       $('.CodeMirror-cursor').hide();
@@ -187,7 +187,7 @@ function setContent(content, filePath, isViewMode) {
 
   cmEditor.setSize('100%', '100%');
 
-  var UTF8_BOM = '\ufeff';
+  const UTF8_BOM = '\ufeff';
   if (content.indexOf(UTF8_BOM) === 0) {
     content = content.substring(1, content.length);
   }
