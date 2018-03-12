@@ -75,23 +75,13 @@ $(document).ready(() => {
     }
   });
 
-  $('#markdownPreview').on('click', (e) => {
+  $('#markdownPreview').on('click', () => {
     $('#markdownPreviewModal').modal({ show: true });
   });
 
-  $('#mdHelpButton').on('click', (e) => {
+  $('#mdHelpButton').on('click', () => {
     $('#markdownHelpModal').modal({ show: true });
   });
-
-  function handleLinks($element) {
-    $element.find('a[href]').each(() => {
-      var currentSrc = $(this).attr('href');
-      $(this).bind('click', function(e) {
-        e.preventDefault();
-        sendMessageToHost({ command: 'openLinkExternally', link: currentSrc });
-      });
-    });
-  }
 
   function loadExtSettings() {
     extSettings = JSON.parse(localStorage.getItem('editorTextSettings'));
