@@ -119,7 +119,12 @@ function setContent(content, fileDirectory, isViewMode) {
     "<div id='code' style='width: 100%; height: 100%; z-index: 9999;'>"
   );
 
-  const fileExt = filePath
+  let fileExt = '';
+  const lastindexQuestionMark = filePath.lastIndexOf('?');
+  if (lastindexQuestionMark > 0) { // Removing everything after ? in URLs .png?queryParam1=2342
+    fileExt = filePath.substring(0, lastindexQuestionMark);
+  }
+  fileExt = fileExt
     .substring(filePath.lastIndexOf('.') + 1, filePath.length)
     .toLowerCase();
   const mode = filetype[fileExt];
@@ -158,7 +163,7 @@ function setContent(content, fileDirectory, isViewMode) {
     cmEditor.setOption('mode', mode);
     CodeMirror.autoLoadMode(cmEditor, mode);
   } else {
-    throw new TypeError('Invalid mode !');
+    console.warn('Invalid mode !' + mode);
   }
 
   viewerMode(isViewMode);
