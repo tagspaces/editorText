@@ -120,12 +120,13 @@ function setContent(content, fileDirectory, isViewMode) {
   );
 
   let fileExt = '';
+  let cleanedPath = filePath;
   const lastindexQuestionMark = filePath.lastIndexOf('?');
   if (lastindexQuestionMark > 0) { // Removing everything after ? in URLs .png?queryParam1=2342
-    fileExt = filePath.substring(0, lastindexQuestionMark);
+    cleanedPath = filePath.substring(0, lastindexQuestionMark);
   }
-  fileExt = fileExt
-    .substring(filePath.lastIndexOf('.') + 1, filePath.length)
+  fileExt = cleanedPath
+    .substring(cleanedPath.lastIndexOf('.') + 1, cleanedPath.length)
     .toLowerCase();
   const mode = filetype[fileExt];
 
