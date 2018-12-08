@@ -169,6 +169,17 @@ function setContent(content, fileDirectory, isViewMode) {
 
   viewerMode(isViewMode);
 
+  cmEditor.setSize('100%', '100%');
+
+  const UTF8_BOM = '\ufeff';
+  if (content.indexOf(UTF8_BOM) === 0) {
+    content = content.substring(1, content.length);
+  }
+
+  cmEditor.setValue(content);
+  cmEditor.clearHistory();
+  cmEditor.refresh();
+
   CodeMirror.on(cmEditor, 'change', () => {
     if (!viewMode) {
       sendMessageToHost({
@@ -180,15 +191,4 @@ function setContent(content, fileDirectory, isViewMode) {
       $('.CodeMirror-cursor').hide();
     }
   });
-
-  cmEditor.setSize('100%', '100%');
-
-  const UTF8_BOM = '\ufeff';
-  if (content.indexOf(UTF8_BOM) === 0) {
-    content = content.substring(1, content.length);
-  }
-
-  cmEditor.setValue(content);
-  cmEditor.clearHistory();
-  cmEditor.refresh();
 }
