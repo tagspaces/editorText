@@ -3,8 +3,6 @@
 
 /* globals marked, CodeMirror, $, getParameterByName, sendMessageToHost, initI18N */
 
-'use strict';
-
 sendMessageToHost({ command: 'loadDefaultTextContent' });
 
 let cmEditor;
@@ -49,6 +47,12 @@ filetype.txt = 'txt';
 
 $(document).ready(() => {
   initI18N(locale, 'ns.editorText.json');
+
+  if (viewMode) {
+    $(document).dblclick(() => {
+      sendMessageToHost({ command: 'editDocument' });
+    });
+  }
 
   let extSettings;
   loadExtSettings();
