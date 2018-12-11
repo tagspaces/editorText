@@ -90,10 +90,6 @@ $(document).ready(() => {
   function loadExtSettings() {
     extSettings = JSON.parse(localStorage.getItem('editorTextSettings'));
   }
-
-  function saveEditorText() {
-    sendMessageToHost({ command: 'saveDocument', filepath: filePath });
-  }
 });
 
 function viewerMode(isViewerMode) {
@@ -183,6 +179,11 @@ function setContent(content, fileDirectory, isViewMode) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
+  cmEditor.addKeyMap({ 'Ctrl-S': () => {
+    if (!viewMode) {
+      sendMessageToHost({ command: 'saveDocument', filepath: filePath });
+    }
+  } });
 
   CodeMirror.on(cmEditor, 'change', () => {
     if (!viewMode) {
