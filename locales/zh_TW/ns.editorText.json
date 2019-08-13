@@ -1,12 +1,12 @@
 {
-  "changeTheme": "Change Theme",
-  "save": "Save",
-  "print": "Print",
-  "about": "About",
-  "aboutTitle": "About editorText extension",
-  "markdownPreview": "Markdown Preview",
-  "markdownTitle": "Previewing Markdown",
-  "markdownHelpButton": "MarkDown Help",
-  "markdownHelpDialogTitle": "MarkDown Syntax Reference",
+  "changeTheme": "變更佈景",
+  "save": "儲存",
+  "print": "列印",
+  "about": "關於",
+  "aboutTitle": "關於文字編輯插件",
+  "markdownPreview": "Markdown預覽",
+  "markdownTitle": "預覽Markdown",
+  "markdownHelpButton": "Markdown協助",
+  "markdownHelpDialogTitle": "Markdown 語法參考",
   "-": "-"
 }
