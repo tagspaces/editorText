@@ -23,3 +23,5 @@ libs/**/documentation/
 libs/**/vendor/
 libs/**/examples/
 libs/**/demos/
+.idea/
+*.iml
