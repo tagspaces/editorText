@@ -70,6 +70,7 @@ $(document).ready(() => {
   }
 
   // Init Markdown Preview functionality
+  $('#markdownPreviewModal').off();
   $('#markdownPreviewModal').on('show.bs.modal', () => {
     if (marked) {
       const modalBody = $('#markdownPreviewModal .modal-body');
@@ -79,10 +80,12 @@ $(document).ready(() => {
     }
   });
 
+  $('#markdownPreview').off();
   $('#markdownPreview').on('click', () => {
     $('#markdownPreviewModal').modal({ show: true });
   });
 
+  $('#mdHelpButton').off();
   $('#mdHelpButton').on('click', () => {
     $('#markdownHelpModal').modal({ show: true });
   });
@@ -122,7 +125,8 @@ function setContent(content, fileDirectory, isViewMode) {
   let fileExt = '';
   let cleanedPath = filePath;
   const lastindexQuestionMark = filePath.lastIndexOf('?');
-  if (lastindexQuestionMark > 0) { // Removing everything after ? in URLs .png?queryParam1=2342
+  if (lastindexQuestionMark > 0) {
+    // Removing everything after ? in URLs .png?queryParam1=2342
     cleanedPath = filePath.substring(0, lastindexQuestionMark);
   }
   fileExt = cleanedPath
@@ -179,11 +183,13 @@ function setContent(content, fileDirectory, isViewMode) {
   cmEditor.setValue(content);
   cmEditor.clearHistory();
   cmEditor.refresh();
-  cmEditor.addKeyMap({ 'Ctrl-S': () => {
-    if (!viewMode) {
-      sendMessageToHost({ command: 'saveDocument', filepath: filePath });
+  cmEditor.addKeyMap({
+    'Ctrl-S': () => {
+      if (!viewMode) {
+        sendMessageToHost({ command: 'saveDocument', filepath: filePath });
+      }
     }
-  } });
+  });
 
   CodeMirror.on(cmEditor, 'change', () => {
     if (!viewMode) {
