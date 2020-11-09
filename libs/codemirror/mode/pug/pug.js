@@ -1,5 +1,5 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -11,7 +11,7 @@
 })(function(CodeMirror) {
 "use strict";
 
-CodeMirror.defineMode('jade', function (config) {
+CodeMirror.defineMode("pug", function (config) {
   // token types
   var KEYWORD = 'keyword';
   var DOCTYPE = 'meta';
@@ -545,12 +545,12 @@ CodeMirror.defineMode('jade', function (config) {
       || javaScriptArguments(stream, state)
       || callArguments(stream, state)
 
-      || yieldStatement(stream, state)
-      || doctype(stream, state)
+      || yieldStatement(stream)
+      || doctype(stream)
       || interpolation(stream, state)
       || caseStatement(stream, state)
       || when(stream, state)
-      || defaultStatement(stream, state)
+      || defaultStatement(stream)
       || extendsStatement(stream, state)
       || append(stream, state)
       || prepend(stream, state)
@@ -565,16 +565,16 @@ CodeMirror.defineMode('jade', function (config) {
       || tag(stream, state)
       || filter(stream, state)
       || code(stream, state)
-      || id(stream, state)
-      || className(stream, state)
+      || id(stream)
+      || className(stream)
       || attrs(stream, state)
       || attributesBlock(stream, state)
-      || indent(stream, state)
+      || indent(stream)
       || text(stream, state)
       || comment(stream, state)
-      || colon(stream, state)
+      || colon(stream)
       || dot(stream, state)
-      || fail(stream, state);
+      || fail(stream);
 
     return tok === true ? null : tok;
   }
@@ -585,6 +585,7 @@ CodeMirror.defineMode('jade', function (config) {
   };
 }, 'javascript', 'css', 'htmlmixed');
 
-CodeMirror.defineMIME('text/x-jade', 'jade');
+CodeMirror.defineMIME('text/x-pug', 'pug');
+CodeMirror.defineMIME('text/x-jade', 'pug');
 
 });

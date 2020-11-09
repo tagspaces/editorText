@@ -17,9 +17,11 @@ libs/**/src/
 libs/**/benchmarks/
 libs/**/test/
 libs/**/tests/
-libs/**/lib/
+libs/**/bin/
 libs/**/docs/
 libs/**/documentation/
 libs/**/vendor/
 libs/**/examples/
 libs/**/demos/
+.idea/
+*.iml

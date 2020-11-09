@@ -1,5 +1,5 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
 (function(mod) {
   if (typeof exports == "object" && typeof module == "object") // CommonJS
@@ -28,6 +28,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       colorKeywords = parserConfig.colorKeywords || {},
       valueKeywords = parserConfig.valueKeywords || {},
       allowNested = parserConfig.allowNested,
+      lineComment = parserConfig.lineComment,
       supportsAtComponent = parserConfig.supportsAtComponent === true;
 
   var type, override;
@@ -62,7 +63,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       if (/[\d.]/.test(stream.peek())) {
         stream.eatWhile(/[\w.%]/);
         return ret("number", "unit");
-      } else if (stream.match(/^-[\w\\\-]+/)) {
+      } else if (stream.match(/^-[\w\\\-]*/)) {
         stream.eatWhile(/[\w\\\-]/);
         if (stream.match(/^\s*:/, false))
           return ret("variable-2", "variable-definition");
@@ -76,12 +77,11 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       return ret("qualifier", "qualifier");
     } else if (/[:;{}\[\]\(\)]/.test(ch)) {
       return ret(null, ch);
-    } else if ((ch == "u" && stream.match(/rl(-prefix)?\(/)) ||
-               (ch == "d" && stream.match("omain(")) ||
-               (ch == "r" && stream.match("egexp("))) {
-      stream.backUp(1);
-      state.tokenize = tokenParenthesized;
-      return ret("property", "word");
+    } else if (stream.match(/[\w-.]+(?=\()/)) {
+      if (/^(url(-prefix)?|domain|regexp)$/.test(stream.current().toLowerCase())) {
+        state.tokenize = tokenParenthesized;
+      }
+      return ret("variable callee", "variable");
     } else if (/[\w\\\-]/.test(ch)) {
       stream.eatWhile(/[\w\\\-]/);
       return ret("property", "word");
@@ -161,16 +161,16 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       return pushContext(state, stream, "block");
     } else if (type == "}" && state.context.prev) {
       return popContext(state);
-    } else if (supportsAtComponent && /@component/.test(type)) {
+    } else if (supportsAtComponent && /@component/i.test(type)) {
       return pushContext(state, stream, "atComponentBlock");
-    } else if (/^@(-moz-)?document$/.test(type)) {
+    } else if (/^@(-moz-)?document$/i.test(type)) {
       return pushContext(state, stream, "documentTypes");
-    } else if (/^@(media|supports|(-moz-)?document|import)$/.test(type)) {
+    } else if (/^@(media|supports|(-moz-)?document|import)$/i.test(type)) {
       return pushContext(state, stream, "atBlock");
-    } else if (/^@(font-face|counter-style)/.test(type)) {
+    } else if (/^@(font-face|counter-style)/i.test(type)) {
       state.stateArg = type;
       return "restricted_atBlock_before";
-    } else if (/^@(-(moz|ms|o|webkit)-)?keyframes$/.test(type)) {
+    } else if (/^@(-(moz|ms|o|webkit)-)?keyframes$/i.test(type)) {
       return "keyframes";
     } else if (type && type.charAt(0) == "@") {
       return pushContext(state, stream, "at");
@@ -253,6 +253,8 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   };
 
   states.pseudo = function(type, stream, state) {
+    if (type == "meta") return "pseudo";
+
     if (type == "word") {
       override = "variable-3";
       return state.context.type;
@@ -380,7 +382,8 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
         style = style[0];
       }
       override = style;
-      state.state = states[state.state](type, stream, state);
+      if (type != "comment")
+        state.state = states[state.state](type, stream, state);
       return override;
     },
 
@@ -398,7 +401,6 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
             ch == "{" && (cx.type == "at" || cx.type == "atBlock")) {
           // Dedent relative to current context.
           indent = Math.max(0, cx.indent - indentUnit);
-          cx = cx.prev;
         }
       }
       return indent;
@@ -407,6 +409,8 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     electricChars: "}",
     blockCommentStart: "/*",
     blockCommentEnd: "*/",
+    blockCommentContinue: " * ",
+    lineComment: lineComment,
     fold: "brace"
   };
 });
@@ -414,7 +418,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   function keySet(array) {
     var keys = {};
     for (var i = 0; i < array.length; ++i) {
-      keys[array[i]] = true;
+      keys[array[i].toLowerCase()] = true;
     }
     return keys;
   }
@@ -451,81 +455,98 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "alignment-baseline", "anchor-point", "animation", "animation-delay",
     "animation-direction", "animation-duration", "animation-fill-mode",
     "animation-iteration-count", "animation-name", "animation-play-state",
-    "animation-timing-function", "appearance", "azimuth", "backface-visibility",
-    "background", "background-attachment", "background-blend-mode", "background-clip",
-    "background-color", "background-image", "background-origin", "background-position",
-    "background-repeat", "background-size", "baseline-shift", "binding",
-    "bleed", "bookmark-label", "bookmark-level", "bookmark-state",
-    "bookmark-target", "border", "border-bottom", "border-bottom-color",
-    "border-bottom-left-radius", "border-bottom-right-radius",
-    "border-bottom-style", "border-bottom-width", "border-collapse",
-    "border-color", "border-image", "border-image-outset",
+    "animation-timing-function", "appearance", "azimuth", "backdrop-filter",
+    "backface-visibility", "background", "background-attachment",
+    "background-blend-mode", "background-clip", "background-color",
+    "background-image", "background-origin", "background-position",
+    "background-position-x", "background-position-y", "background-repeat",
+    "background-size", "baseline-shift", "binding", "bleed", "block-size",
+    "bookmark-label", "bookmark-level", "bookmark-state", "bookmark-target",
+    "border", "border-bottom", "border-bottom-color", "border-bottom-left-radius",
+    "border-bottom-right-radius", "border-bottom-style", "border-bottom-width",
+    "border-collapse", "border-color", "border-image", "border-image-outset",
     "border-image-repeat", "border-image-slice", "border-image-source",
-    "border-image-width", "border-left", "border-left-color",
-    "border-left-style", "border-left-width", "border-radius", "border-right",
-    "border-right-color", "border-right-style", "border-right-width",
-    "border-spacing", "border-style", "border-top", "border-top-color",
-    "border-top-left-radius", "border-top-right-radius", "border-top-style",
-    "border-top-width", "border-width", "bottom", "box-decoration-break",
-    "box-shadow", "box-sizing", "break-after", "break-before", "break-inside",
-    "caption-side", "clear", "clip", "color", "color-profile", "column-count",
-    "column-fill", "column-gap", "column-rule", "column-rule-color",
-    "column-rule-style", "column-rule-width", "column-span", "column-width",
-    "columns", "content", "counter-increment", "counter-reset", "crop", "cue",
-    "cue-after", "cue-before", "cursor", "direction", "display",
-    "dominant-baseline", "drop-initial-after-adjust",
-    "drop-initial-after-align", "drop-initial-before-adjust",
-    "drop-initial-before-align", "drop-initial-size", "drop-initial-value",
-    "elevation", "empty-cells", "fit", "fit-position", "flex", "flex-basis",
-    "flex-direction", "flex-flow", "flex-grow", "flex-shrink", "flex-wrap",
-    "float", "float-offset", "flow-from", "flow-into", "font", "font-feature-settings",
-    "font-family", "font-kerning", "font-language-override", "font-size", "font-size-adjust",
-    "font-stretch", "font-style", "font-synthesis", "font-variant",
-    "font-variant-alternates", "font-variant-caps", "font-variant-east-asian",
-    "font-variant-ligatures", "font-variant-numeric", "font-variant-position",
-    "font-weight", "grid", "grid-area", "grid-auto-columns", "grid-auto-flow",
-    "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-gap",
-    "grid-column-start", "grid-gap", "grid-row", "grid-row-end", "grid-row-gap",
-    "grid-row-start", "grid-template", "grid-template-areas", "grid-template-columns",
-    "grid-template-rows", "hanging-punctuation", "height", "hyphens",
-    "icon", "image-orientation", "image-rendering", "image-resolution",
-    "inline-box-align", "justify-content", "left", "letter-spacing",
-    "line-break", "line-height", "line-stacking", "line-stacking-ruby",
+    "border-image-width", "border-left", "border-left-color", "border-left-style",
+    "border-left-width", "border-radius", "border-right", "border-right-color",
+    "border-right-style", "border-right-width", "border-spacing", "border-style",
+    "border-top", "border-top-color", "border-top-left-radius",
+    "border-top-right-radius", "border-top-style", "border-top-width",
+    "border-width", "bottom", "box-decoration-break", "box-shadow", "box-sizing",
+    "break-after", "break-before", "break-inside", "caption-side", "caret-color",
+    "clear", "clip", "color", "color-profile", "column-count", "column-fill",
+    "column-gap", "column-rule", "column-rule-color", "column-rule-style",
+    "column-rule-width", "column-span", "column-width", "columns", "contain",
+    "content", "counter-increment", "counter-reset", "crop", "cue", "cue-after",
+    "cue-before", "cursor", "direction", "display", "dominant-baseline",
+    "drop-initial-after-adjust", "drop-initial-after-align",
+    "drop-initial-before-adjust", "drop-initial-before-align", "drop-initial-size",
+    "drop-initial-value", "elevation", "empty-cells", "fit", "fit-position",
+    "flex", "flex-basis", "flex-direction", "flex-flow", "flex-grow",
+    "flex-shrink", "flex-wrap", "float", "float-offset", "flow-from", "flow-into",
+    "font", "font-family", "font-feature-settings", "font-kerning",
+    "font-language-override", "font-optical-sizing", "font-size",
+    "font-size-adjust", "font-stretch", "font-style", "font-synthesis",
+    "font-variant", "font-variant-alternates", "font-variant-caps",
+    "font-variant-east-asian", "font-variant-ligatures", "font-variant-numeric",
+    "font-variant-position", "font-variation-settings", "font-weight", "gap",
+    "grid", "grid-area", "grid-auto-columns", "grid-auto-flow", "grid-auto-rows",
+    "grid-column", "grid-column-end", "grid-column-gap", "grid-column-start",
+    "grid-gap", "grid-row", "grid-row-end", "grid-row-gap", "grid-row-start",
+    "grid-template", "grid-template-areas", "grid-template-columns",
+    "grid-template-rows", "hanging-punctuation", "height", "hyphens", "icon",
+    "image-orientation", "image-rendering", "image-resolution", "inline-box-align",
+    "inset", "inset-block", "inset-block-end", "inset-block-start", "inset-inline",
+    "inset-inline-end", "inset-inline-start", "isolation", "justify-content",
+    "justify-items", "justify-self", "left", "letter-spacing", "line-break",
+    "line-height", "line-height-step", "line-stacking", "line-stacking-ruby",
     "line-stacking-shift", "line-stacking-strategy", "list-style",
     "list-style-image", "list-style-position", "list-style-type", "margin",
-    "margin-bottom", "margin-left", "margin-right", "margin-top",
-    "marker-offset", "marks", "marquee-direction", "marquee-loop",
-    "marquee-play-count", "marquee-speed", "marquee-style", "max-height",
-    "max-width", "min-height", "min-width", "move-to", "nav-down", "nav-index",
-    "nav-left", "nav-right", "nav-up", "object-fit", "object-position",
-    "opacity", "order", "orphans", "outline",
-    "outline-color", "outline-offset", "outline-style", "outline-width",
-    "overflow", "overflow-style", "overflow-wrap", "overflow-x", "overflow-y",
-    "padding", "padding-bottom", "padding-left", "padding-right", "padding-top",
-    "page", "page-break-after", "page-break-before", "page-break-inside",
-    "page-policy", "pause", "pause-after", "pause-before", "perspective",
-    "perspective-origin", "pitch", "pitch-range", "play-during", "position",
-    "presentation-level", "punctuation-trim", "quotes", "region-break-after",
-    "region-break-before", "region-break-inside", "region-fragment",
-    "rendering-intent", "resize", "rest", "rest-after", "rest-before", "richness",
-    "right", "rotation", "rotation-point", "ruby-align", "ruby-overhang",
-    "ruby-position", "ruby-span", "shape-image-threshold", "shape-inside", "shape-margin",
-    "shape-outside", "size", "speak", "speak-as", "speak-header",
-    "speak-numeral", "speak-punctuation", "speech-rate", "stress", "string-set",
-    "tab-size", "table-layout", "target", "target-name", "target-new",
-    "target-position", "text-align", "text-align-last", "text-decoration",
+    "margin-bottom", "margin-left", "margin-right", "margin-top", "marks",
+    "marquee-direction", "marquee-loop", "marquee-play-count", "marquee-speed",
+    "marquee-style", "max-block-size", "max-height", "max-inline-size",
+    "max-width", "min-block-size", "min-height", "min-inline-size", "min-width",
+    "mix-blend-mode", "move-to", "nav-down", "nav-index", "nav-left", "nav-right",
+    "nav-up", "object-fit", "object-position", "offset", "offset-anchor",
+    "offset-distance", "offset-path", "offset-position", "offset-rotate",
+    "opacity", "order", "orphans", "outline", "outline-color", "outline-offset",
+    "outline-style", "outline-width", "overflow", "overflow-style",
+    "overflow-wrap", "overflow-x", "overflow-y", "padding", "padding-bottom",
+    "padding-left", "padding-right", "padding-top", "page", "page-break-after",
+    "page-break-before", "page-break-inside", "page-policy", "pause",
+    "pause-after", "pause-before", "perspective", "perspective-origin", "pitch",
+    "pitch-range", "place-content", "place-items", "place-self", "play-during",
+    "position", "presentation-level", "punctuation-trim", "quotes",
+    "region-break-after", "region-break-before", "region-break-inside",
+    "region-fragment", "rendering-intent", "resize", "rest", "rest-after",
+    "rest-before", "richness", "right", "rotate", "rotation", "rotation-point",
+    "row-gap", "ruby-align", "ruby-overhang", "ruby-position", "ruby-span",
+    "scale", "scroll-behavior", "scroll-margin", "scroll-margin-block",
+    "scroll-margin-block-end", "scroll-margin-block-start", "scroll-margin-bottom",
+    "scroll-margin-inline", "scroll-margin-inline-end",
+    "scroll-margin-inline-start", "scroll-margin-left", "scroll-margin-right",
+    "scroll-margin-top", "scroll-padding", "scroll-padding-block",
+    "scroll-padding-block-end", "scroll-padding-block-start",
+    "scroll-padding-bottom", "scroll-padding-inline", "scroll-padding-inline-end",
+    "scroll-padding-inline-start", "scroll-padding-left", "scroll-padding-right",
+    "scroll-padding-top", "scroll-snap-align", "scroll-snap-type",
+    "shape-image-threshold", "shape-inside", "shape-margin", "shape-outside",
+    "size", "speak", "speak-as", "speak-header", "speak-numeral",
+    "speak-punctuation", "speech-rate", "stress", "string-set", "tab-size",
+    "table-layout", "target", "target-name", "target-new", "target-position",
+    "text-align", "text-align-last", "text-combine-upright", "text-decoration",
     "text-decoration-color", "text-decoration-line", "text-decoration-skip",
-    "text-decoration-style", "text-emphasis", "text-emphasis-color",
-    "text-emphasis-position", "text-emphasis-style", "text-height",
-    "text-indent", "text-justify", "text-outline", "text-overflow", "text-shadow",
-    "text-size-adjust", "text-space-collapse", "text-transform", "text-underline-position",
-    "text-wrap", "top", "transform", "transform-origin", "transform-style",
-    "transition", "transition-delay", "transition-duration",
-    "transition-property", "transition-timing-function", "unicode-bidi",
-    "vertical-align", "visibility", "voice-balance", "voice-duration",
-    "voice-family", "voice-pitch", "voice-range", "voice-rate", "voice-stress",
-    "voice-volume", "volume", "white-space", "widows", "width", "word-break",
-    "word-spacing", "word-wrap", "z-index",
+    "text-decoration-skip-ink", "text-decoration-style", "text-emphasis",
+    "text-emphasis-color", "text-emphasis-position", "text-emphasis-style",
+    "text-height", "text-indent", "text-justify", "text-orientation",
+    "text-outline", "text-overflow", "text-rendering", "text-shadow",
+    "text-size-adjust", "text-space-collapse", "text-transform",
+    "text-underline-position", "text-wrap", "top", "transform", "transform-origin",
+    "transform-style", "transition", "transition-delay", "transition-duration",
+    "transition-property", "transition-timing-function", "translate",
+    "unicode-bidi", "user-select", "vertical-align", "visibility", "voice-balance",
+    "voice-duration", "voice-family", "voice-pitch", "voice-range", "voice-rate",
+    "voice-stress", "voice-volume", "volume", "white-space", "widows", "width",
+    "will-change", "word-break", "word-spacing", "word-wrap", "writing-mode", "z-index",
     // SVG-specific
     "clip-path", "clip-rule", "mask", "enable-background", "filter", "flood-color",
     "flood-opacity", "lighting-color", "stop-color", "stop-opacity", "pointer-events",
@@ -539,16 +560,28 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
   ], propertyKeywords = keySet(propertyKeywords_);
 
   var nonStandardPropertyKeywords_ = [
+    "border-block", "border-block-color", "border-block-end",
+    "border-block-end-color", "border-block-end-style", "border-block-end-width",
+    "border-block-start", "border-block-start-color", "border-block-start-style",
+    "border-block-start-width", "border-block-style", "border-block-width",
+    "border-inline", "border-inline-color", "border-inline-end",
+    "border-inline-end-color", "border-inline-end-style",
+    "border-inline-end-width", "border-inline-start", "border-inline-start-color",
+    "border-inline-start-style", "border-inline-start-width",
+    "border-inline-style", "border-inline-width", "margin-block",
+    "margin-block-end", "margin-block-start", "margin-inline", "margin-inline-end",
+    "margin-inline-start", "padding-block", "padding-block-end",
+    "padding-block-start", "padding-inline", "padding-inline-end",
+    "padding-inline-start", "scroll-snap-stop", "scrollbar-3d-light-color",
     "scrollbar-arrow-color", "scrollbar-base-color", "scrollbar-dark-shadow-color",
     "scrollbar-face-color", "scrollbar-highlight-color", "scrollbar-shadow-color",
-    "scrollbar-3d-light-color", "scrollbar-track-color", "shape-inside",
-    "searchfield-cancel-button", "searchfield-decoration", "searchfield-results-button",
-    "searchfield-results-decoration", "zoom"
+    "scrollbar-track-color", "searchfield-cancel-button", "searchfield-decoration",
+    "searchfield-results-button", "searchfield-results-decoration", "shape-inside", "zoom"
   ], nonStandardPropertyKeywords = keySet(nonStandardPropertyKeywords_);
 
   var fontProperties_ = [
-    "font-family", "src", "unicode-range", "font-variant", "font-feature-settings",
-    "font-stretch", "font-weight", "font-style"
+    "font-display", "font-family", "src", "unicode-range", "font-variant",
+     "font-feature-settings", "font-stretch", "font-weight", "font-style"
   ], fontProperties = keySet(fontProperties_);
 
   var counterDescriptors_ = [
@@ -589,7 +622,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "above", "absolute", "activeborder", "additive", "activecaption", "afar",
     "after-white-space", "ahead", "alias", "all", "all-scroll", "alphabetic", "alternate",
     "always", "amharic", "amharic-abegede", "antialiased", "appworkspace",
-    "arabic-indic", "armenian", "asterisks", "attr", "auto", "avoid", "avoid-column", "avoid-page",
+    "arabic-indic", "armenian", "asterisks", "attr", "auto", "auto-flow", "avoid", "avoid-column", "avoid-page",
     "avoid-region", "background", "backwards", "baseline", "below", "bidi-override", "binary",
     "bengali", "blink", "block", "block-axis", "bold", "bolder", "border", "border-box",
     "both", "bottom", "break", "break-all", "break-word", "bullets", "button", "button-bevel",
@@ -598,7 +631,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "cell", "center", "checkbox", "circle", "cjk-decimal", "cjk-earthly-branch",
     "cjk-heavenly-stem", "cjk-ideographic", "clear", "clip", "close-quote",
     "col-resize", "collapse", "color", "color-burn", "color-dodge", "column", "column-reverse",
-    "compact", "condensed", "contain", "content",
+    "compact", "condensed", "contain", "content", "contents",
     "content-box", "context-menu", "continuous", "copy", "counter", "counters", "cover", "crop",
     "cross", "crosshair", "currentcolor", "cursive", "cyclic", "darken", "dashed", "decimal",
     "decimal-leading-zero", "default", "default-button", "dense", "destination-atop",
@@ -641,7 +674,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "mix", "mongolian", "monospace", "move", "multiple", "multiply", "myanmar", "n-resize",
     "narrower", "ne-resize", "nesw-resize", "no-close-quote", "no-drop",
     "no-open-quote", "no-repeat", "none", "normal", "not-allowed", "nowrap",
-    "ns-resize", "numbers", "numeric", "nw-resize", "nwse-resize", "oblique", "octal", "open-quote",
+    "ns-resize", "numbers", "numeric", "nw-resize", "nwse-resize", "oblique", "octal", "opacity", "open-quote",
     "optimizeLegibility", "optimizeSpeed", "oriya", "oromo", "outset",
     "outside", "outside-shape", "overlay", "overline", "padding", "padding-box",
     "painted", "page", "paused", "persian", "perspective", "plus-darker", "plus-lighter",
@@ -653,17 +686,17 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "rgb", "rgba", "ridge", "right", "rotate", "rotate3d", "rotateX", "rotateY",
     "rotateZ", "round", "row", "row-resize", "row-reverse", "rtl", "run-in", "running",
     "s-resize", "sans-serif", "saturation", "scale", "scale3d", "scaleX", "scaleY", "scaleZ", "screen",
-    "scroll", "scrollbar", "se-resize", "searchfield",
+    "scroll", "scrollbar", "scroll-position", "se-resize", "searchfield",
     "searchfield-cancel-button", "searchfield-decoration",
-    "searchfield-results-button", "searchfield-results-decoration",
+    "searchfield-results-button", "searchfield-results-decoration", "self-start", "self-end",
     "semi-condensed", "semi-expanded", "separate", "serif", "show", "sidama",
     "simp-chinese-formal", "simp-chinese-informal", "single",
     "skew", "skewX", "skewY", "skip-white-space", "slide", "slider-horizontal",
     "slider-vertical", "sliderthumb-horizontal", "sliderthumb-vertical", "slow",
     "small", "small-caps", "small-caption", "smaller", "soft-light", "solid", "somali",
-    "source-atop", "source-in", "source-out", "source-over", "space", "space-around", "space-between", "spell-out", "square",
+    "source-atop", "source-in", "source-out", "source-over", "space", "space-around", "space-between", "space-evenly", "spell-out", "square",
     "square-button", "start", "static", "status-bar", "stretch", "stroke", "sub",
-    "subpixel-antialiased", "super", "sw-resize", "symbolic", "symbols", "table",
+    "subpixel-antialiased", "super", "sw-resize", "symbolic", "symbols", "system-ui", "table",
     "table-caption", "table-cell", "table-column", "table-column-group",
     "table-footer-group", "table-header-group", "table-row", "table-row-group",
     "tamil",
@@ -671,9 +704,9 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     "thick", "thin", "threeddarkshadow", "threedface", "threedhighlight",
     "threedlightshadow", "threedshadow", "tibetan", "tigre", "tigrinya-er",
     "tigrinya-er-abegede", "tigrinya-et", "tigrinya-et-abegede", "to", "top",
-    "trad-chinese-formal", "trad-chinese-informal",
+    "trad-chinese-formal", "trad-chinese-informal", "transform",
     "translate", "translate3d", "translateX", "translateY", "translateZ",
-    "transparent", "ultra-condensed", "ultra-expanded", "underline", "up",
+    "transparent", "ultra-condensed", "ultra-expanded", "underline", "unset", "up",
     "upper-alpha", "upper-armenian", "upper-greek", "upper-hexadecimal",
     "upper-latin", "upper-norwegian", "upper-roman", "uppercase", "urdu", "url",
     "var", "vertical", "vertical-text", "visible", "visibleFill", "visiblePainted",
@@ -730,6 +763,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     valueKeywords: valueKeywords,
     fontProperties: fontProperties,
     allowNested: true,
+    lineComment: "//",
     tokenHooks: {
       "/": function(stream, state) {
         if (stream.eat("/")) {
@@ -743,8 +777,8 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
         }
       },
       ":": function(stream) {
-        if (stream.match(/\s*\{/))
-          return [null, "{"];
+        if (stream.match(/\s*\{/, false))
+          return [null, null]
         return false;
       },
       "$": function(stream) {
@@ -772,6 +806,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
     valueKeywords: valueKeywords,
     fontProperties: fontProperties,
     allowNested: true,
+    lineComment: "//",
     tokenHooks: {
       "/": function(stream, state) {
         if (stream.eat("/")) {
@@ -786,7 +821,7 @@ CodeMirror.defineMode("css", function(config, parserConfig) {
       },
       "@": function(stream) {
         if (stream.eat("{")) return [null, "interpolation"];
-        if (stream.match(/^(charset|document|font-face|import|(-(moz|ms|o|webkit)-)?keyframes|media|namespace|page|supports)\b/, false)) return false;
+        if (stream.match(/^(charset|document|font-face|import|(-(moz|ms|o|webkit)-)?keyframes|media|namespace|page|supports)\b/i, false)) return false;
         stream.eatWhile(/[\w\\\-]/);
         if (stream.match(/^\s*:/, false))
           return ["variable-2", "variable-definition"];
