@@ -1,3 +1,5 @@
+This repository is archived. Please use https://github.com/tagspaces/tagspaces-extensions instead.
+
 # Text Editor for TagSpaces
 
 A TagSpaces extension allowing editing of text based documents.
